@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { X, Send } from 'lucide-react';
+import { X, Send, MessageCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { t } from '@/lib/i18n';
@@ -55,82 +56,107 @@ const ChatWidget = () => {
   return (
     <>
       {/* Float button */}
-      {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 droplet gradient-ocean-light shadow-water-lg flex items-center justify-center text-primary-foreground hover:scale-110 transition-transform"
-        >
-          <span className="absolute inset-0 droplet gradient-ocean-light animate-ping opacity-20" />
-          💧
-        </button>
-      )}
+      <AnimatePresence>
+        {!open && (
+          <motion.button
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setOpen(true)}
+            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary shadow-glow flex items-center justify-center text-primary-foreground"
+          >
+            <MessageCircle size={22} />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Panel */}
-      {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-4rem)] bg-card rounded-2xl shadow-water-lg overflow-hidden flex flex-col animate-scale-in border border-border">
-          {/* Header */}
-          <div className="gradient-ocean p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 droplet bg-primary-foreground/20 flex items-center justify-center text-lg">💧</div>
-              <div>
-                <h3 className="text-primary-foreground text-sm font-semibold">{t('chat_title', lang)}</h3>
-                <span className="text-primary-foreground/60 text-xs flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
-                  {t('chat_online', lang)}
-                </span>
-              </div>
-            </div>
-            <button onClick={() => setOpen(false)} className="text-primary-foreground/70 hover:text-primary-foreground">
-              <X size={20} />
-            </button>
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-water-crystal dark:bg-background">
-            {messages.length === 0 && (
-              <div className="text-center text-muted-foreground text-sm py-8">
-                {lang === 'uz' ? "Savolingizni yozing!" : lang === 'ru' ? "Задайте ваш вопрос!" : "Ask your question!"}
-              </div>
-            )}
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] px-4 py-2.5 text-sm leading-relaxed ${
-                  msg.role === 'user'
-                    ? 'gradient-ocean-light text-primary-foreground rounded-2xl rounded-tr-sm'
-                    : 'bg-card dark:bg-muted text-card-foreground rounded-2xl rounded-tl-sm shadow-sm'
-                }`}>
-                  {msg.content}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-4rem)] bg-background rounded-2xl shadow-water-lg overflow-hidden flex flex-col border border-border"
+          >
+            {/* Header */}
+            <div className="bg-primary p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                  <MessageCircle size={18} className="text-primary-foreground" />
+                </div>
+                <div>
+                  <h3 className="text-primary-foreground text-sm font-semibold">{t('chat_title', lang)}</h3>
+                  <span className="text-primary-foreground/60 text-xs flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                    {t('chat_online', lang)}
+                  </span>
                 </div>
               </div>
-            ))}
-            {typing && (
-              <div className="flex justify-start">
-                <div className="bg-card dark:bg-muted rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1.5">
-                  {[0, 1, 2].map(i => (
-                    <span key={i} className="w-2 h-2 rounded-full bg-primary" style={{ animation: `typewriter-dot 1.2s ${i * 0.2}s infinite` }} />
-                  ))}
-                </div>
-              </div>
-            )}
-            <div ref={messagesEnd} />
-          </div>
-
-          {/* Input */}
-          <div className="p-3 border-t border-border bg-card">
-            <form onSubmit={e => { e.preventDefault(); send(); }} className="flex gap-2">
-              <input
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                placeholder={t('chat_placeholder', lang)}
-                className="flex-1 px-4 py-2.5 rounded-full bg-muted text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/50"
-              />
-              <button type="submit" disabled={!input.trim()} className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity">
-                <Send size={16} />
+              <button onClick={() => setOpen(false)} className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+                <X size={20} />
               </button>
-            </form>
-          </div>
-        </div>
-      )}
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {messages.length === 0 && (
+                <div className="text-center text-muted-foreground text-sm py-8">
+                  {lang === 'uz' ? "Savolingizni yozing!" : lang === 'ru' ? "Задайте ваш вопрос!" : "Ask your question!"}
+                </div>
+              )}
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-[80%] px-4 py-2.5 text-sm leading-relaxed ${
+                    msg.role === 'user'
+                      ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-md'
+                      : 'bg-muted text-foreground rounded-2xl rounded-bl-md'
+                  }`}>
+                    {msg.content}
+                  </div>
+                </motion.div>
+              ))}
+              {typing && (
+                <div className="flex justify-start">
+                  <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 flex gap-1.5">
+                    {[0, 1, 2].map(i => (
+                      <span key={i} className="w-2 h-2 rounded-full bg-primary/60" style={{ animation: `typewriter-dot 1.2s ${i * 0.2}s infinite` }} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEnd} />
+            </div>
+
+            {/* Input */}
+            <div className="p-3 border-t border-border">
+              <form onSubmit={e => { e.preventDefault(); send(); }} className="flex gap-2">
+                <input
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  placeholder={t('chat_placeholder', lang)}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-muted text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/30 transition-shadow"
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim()}
+                  className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-all"
+                >
+                  <Send size={16} />
+                </button>
+              </form>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
