@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,38 +6,38 @@
 
 @layer base {
   :root {
-    /* Water Palette — Light */
-    --background: 200 100% 97%;       /* #F0F9FF crystal */
-    --foreground: 210 55% 13%;        /* #0D2137 text */
+    /* Modern Aqua — Light */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 210 55% 13%;
+    --card-foreground: 215 25% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 55% 13%;
-    --primary: 211 78% 42%;           /* #1565C0 */
+    --popover-foreground: 215 25% 15%;
+    --primary: 205 85% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 199 92% 56%;         /* #29B6F6 light */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 199 100% 92%;            /* #E1F5FE mist */
-    --muted-foreground: 210 24% 43%;  /* #546E8A */
-    --accent: 187 100% 38%;           /* #00ACC1 teal */
+    --secondary: 205 30% 94%;
+    --secondary-foreground: 215 25% 25%;
+    --muted: 210 15% 95%;
+    --muted-foreground: 215 12% 50%;
+    --accent: 192 75% 45%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 200 42% 80%;            /* #B3D4E8 */
-    --input: 200 42% 80%;
-    --ring: 211 78% 42%;
+    --border: 214 15% 91%;
+    --input: 214 15% 91%;
+    --ring: 205 85% 45%;
     --radius: 0.75rem;
 
-    /* Water-specific tokens */
-    --water-deep: 210 65% 15%;        /* #0A2540 */
-    --water-primary: 211 78% 42%;     /* #1565C0 */
-    --water-blue: 199 98% 41%;        /* #0288D1 */
-    --water-light: 199 92% 56%;       /* #29B6F6 */
-    --water-teal: 187 100% 38%;       /* #00ACC1 */
-    --water-cyan: 187 100% 42%;       /* #00BCD4 */
-    --water-foam: 199 91% 84%;        /* #B3E5FC */
-    --water-mist: 199 100% 94%;       /* #E1F5FE */
-    --water-crystal: 200 100% 97%;    /* #F0F9FF */
+    /* Water tokens */
+    --water-deep: 215 45% 12%;
+    --water-primary: 205 85% 45%;
+    --water-blue: 200 80% 48%;
+    --water-light: 200 85% 60%;
+    --water-teal: 192 75% 45%;
+    --water-cyan: 188 70% 50%;
+    --water-foam: 205 50% 92%;
+    --water-mist: 210 30% 96%;
+    --water-crystal: 210 20% 98%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -50,35 +50,35 @@
   }
 
   .dark {
-    --background: 212 70% 6%;         /* #050F1A */
-    --foreground: 210 40% 98%;
-    --card: 210 55% 13%;              /* #0D2137 */
-    --card-foreground: 210 40% 98%;
-    --popover: 210 55% 13%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199 92% 56%;           /* #29B6F6 */
-    --primary-foreground: 212 70% 6%;
-    --secondary: 211 78% 42%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 210 45% 18%;             /* #0A1929 */
-    --muted-foreground: 200 20% 65%;
-    --accent: 187 100% 38%;
-    --accent-foreground: 210 40% 98%;
+    --background: 220 25% 7%;
+    --foreground: 210 20% 93%;
+    --card: 220 20% 11%;
+    --card-foreground: 210 20% 93%;
+    --popover: 220 20% 11%;
+    --popover-foreground: 210 20% 93%;
+    --primary: 200 85% 55%;
+    --primary-foreground: 220 25% 7%;
+    --secondary: 215 20% 18%;
+    --secondary-foreground: 210 20% 85%;
+    --muted: 215 20% 15%;
+    --muted-foreground: 210 12% 55%;
+    --accent: 192 75% 50%;
+    --accent-foreground: 220 25% 7%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 210 38% 22%;            /* #1E3A52 */
-    --input: 210 38% 22%;
-    --ring: 199 92% 56%;
+    --border: 215 15% 18%;
+    --input: 215 15% 18%;
+    --ring: 200 85% 55%;
 
-    --water-deep: 210 65% 15%;
-    --water-primary: 199 92% 56%;
-    --water-blue: 199 98% 41%;
-    --water-light: 199 92% 56%;
-    --water-teal: 187 100% 38%;
-    --water-cyan: 187 100% 42%;
-    --water-foam: 210 38% 22%;
-    --water-mist: 210 45% 18%;
-    --water-crystal: 212 70% 6%;
+    --water-deep: 215 45% 12%;
+    --water-primary: 200 85% 55%;
+    --water-blue: 200 80% 48%;
+    --water-light: 200 85% 60%;
+    --water-teal: 192 75% 50%;
+    --water-cyan: 188 70% 55%;
+    --water-foam: 215 15% 18%;
+    --water-mist: 215 20% 13%;
+    --water-crystal: 220 25% 7%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -100,16 +100,16 @@
     transition: background-color 300ms ease, color 300ms ease;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    @apply font-display tracking-tight;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 dark:bg-card/70 backdrop-blur-xl border border-white/20 dark:border-border/30;
+    @apply bg-white/60 dark:bg-card/60 backdrop-blur-2xl border border-white/40 dark:border-border/40;
   }
   .glass-strong {
-    @apply bg-white/90 dark:bg-card/90 backdrop-blur-2xl border border-white/30 dark:border-border/40;
+    @apply bg-white/80 dark:bg-card/80 backdrop-blur-3xl border border-white/50 dark:border-border/50;
   }
   .gradient-ocean {
     background: linear-gradient(135deg, hsl(var(--water-deep)), hsl(var(--water-primary)), hsl(var(--water-blue)));
@@ -118,25 +118,38 @@
     background: linear-gradient(135deg, hsl(var(--water-primary)), hsl(var(--water-blue)), hsl(var(--water-light)));
   }
   .gradient-hero {
-    background: linear-gradient(180deg, hsl(var(--water-deep)) 0%, hsl(var(--water-primary)) 50%, hsl(var(--water-blue)) 100%);
+    background: linear-gradient(180deg, hsl(215 45% 10%) 0%, hsl(var(--water-primary)) 60%, hsl(var(--water-blue)) 100%);
+  }
+  .gradient-subtle {
+    background: linear-gradient(135deg, hsl(var(--water-foam)), hsl(var(--water-mist)));
   }
   .text-gradient-water {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--water-primary)), hsl(var(--water-blue)), hsl(var(--water-teal)));
+    background-image: linear-gradient(135deg, hsl(var(--water-primary)), hsl(var(--water-teal)));
   }
   .droplet {
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   }
   .shadow-water {
-    box-shadow: 0 20px 60px rgba(2, 136, 209, 0.15);
+    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   }
   .shadow-water-lg {
-    box-shadow: 0 30px 80px rgba(2, 136, 209, 0.2);
+    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.04);
+  }
+  .shadow-glow {
+    box-shadow: 0 0 40px -10px hsl(var(--primary) / 0.25);
   }
   .shimmer {
-    background: linear-gradient(90deg, hsl(var(--water-mist)) 25%, hsl(var(--water-foam)) 50%, hsl(var(--water-mist)) 75%);
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--border)) 50%, hsl(var(--muted)) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
+  }
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -147,12 +160,12 @@
 
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(3deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
 }
 
 @keyframes float-slow {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-30px); }
+  50% { transform: translateY(-15px); }
 }
 
 @keyframes bounce-slow {
