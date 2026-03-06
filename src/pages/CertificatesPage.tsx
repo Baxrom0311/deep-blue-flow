@@ -1,56 +1,61 @@
 import { useQuery } from '@tanstack/react-query';
-import { Download, ExternalLink } from 'lucide-react';
+import { Download, ExternalLink, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { t, localizedField } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { Certificate, PaginatedResponse } from '@/types';
 
 const CertificatesPage = () => {
   const { lang } = useLang();
-  const { data, isLoading } = useQuery({ queryKey: ['certificates'], queryFn: api.getCertificates, staleTime: 5 * 60 * 1000 });
-  const certs = Array.isArray(data) ? data : data?.items || [];
+  const { data, isLoading } = useQuery<Certificate[] | PaginatedResponse<Certificate>>({ queryKey: ['certificates'], queryFn: api.getCertificates, staleTime: 5 * 60 * 1000 });
+  const certs = Array.isArray(data) ? data : (data?.items || []);
 
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative gradient-hero flex items-center justify-center" style={{ minHeight: '45vh' }}>
-        <div className="absolute w-[400px] h-[400px] rounded-full bg-white/5 blur-[100px] -top-20 -left-20" />
-        <div className="relative z-10 text-center container mx-auto px-4">
+      <section className="relative flex items-center justify-center gradient-hero overflow-hidden" style={{ minHeight: '45vh' }}>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-[400px] h-[400px] rounded-full bg-accent/8 dark:bg-accent/5 blur-[120px] -top-20 -left-20" style={{ animation: 'float 12s ease-in-out infinite' }} />
+          <div className="absolute w-[350px] h-[350px] rounded-full bg-primary/6 dark:bg-primary/3 blur-[100px] bottom-0 right-0" style={{ animation: 'float-slow 10s ease-in-out 2s infinite' }} />
+        </div>
+        <div className="relative z-10 text-center container mx-auto px-4 pt-24">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50 mb-3 block"
+            className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.35em] text-gradient-water mb-4"
           >
+            <ShieldCheck size={16} />
             {lang === 'uz' ? 'Sifat kafolati' : lang === 'ru' ? 'Гарантия качества' : 'Quality Assurance'}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-display text-5xl md:text-6xl font-bold text-white"
+            className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-gradient-premium tracking-tight"
           >
             {t('certificates_title', lang)}
           </motion.h1>
         </div>
       </section>
 
-      <section className="py-24 bg-background">
+      <section className="py-24 gradient-mesh bg-background">
         <div className="container mx-auto px-4">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-2xl shimmer" />)}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 6 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-[2rem] shimmer" />)}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {certs.map((cert: any, i: number) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {certs.map((cert: Certificate, i: number) => (
                 <motion.div
                   key={cert.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="rounded-2xl overflow-hidden bg-card border border-border/50 hover-lift group"
+                  transition={{ delay: i * 0.05, duration: 0.5 }}
+                  className="rounded-[2rem] overflow-hidden bg-card border border-border shadow-sm hover-lift group p-3"
                 >
-                  <div className="aspect-[3/4] overflow-hidden bg-muted relative">
+                  <div className="aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-muted/50 relative">
                     <img
                       src={cert.preview_url || cert.image_url || cert.file_url}
                       alt={localizedField(cert, 'title', lang)}
@@ -58,21 +63,21 @@ const CertificatesPage = () => {
                       loading="lazy"
                     />
                     {cert.file_type === 'pdf' && (
-                      <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold uppercase">PDF</span>
+                      <span className="absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-red-500 text-white text-[10px] font-black uppercase shadow-md">PDF</span>
                     )}
                   </div>
                   <div className="p-5">
-                    <h3 className="font-display text-base font-bold text-card-foreground mb-1">{localizedField(cert, 'title', lang)}</h3>
-                    {cert.issued_by && <p className="text-sm text-muted-foreground mb-4">{cert.issued_by}</p>}
-                    <div className="flex gap-3">
+                    <h3 className="font-display text-lg font-bold text-foreground mb-2">{localizedField(cert, 'title', lang)}</h3>
+                    {cert.issued_by && <p className="text-sm text-muted-foreground mb-4 font-body">{cert.issued_by}</p>}
+                    <div className="flex gap-4">
                       {cert.is_downloadable && cert.file_url && (
-                        <a href={cert.file_url} download className="flex items-center gap-1.5 text-sm text-primary font-medium hover:underline">
-                          <Download size={14} /> {t('download', lang)}
+                        <a href={cert.file_url} download className="flex items-center gap-2 text-sm text-primary font-bold hover:underline">
+                          <Download size={15} /> {t('download', lang)}
                         </a>
                       )}
                       {cert.file_type === 'pdf' && cert.file_url && (
-                        <a href={cert.file_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                          <ExternalLink size={14} />
+                        <a href={cert.file_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors font-bold">
+                          <ExternalLink size={15} />
                           {lang === 'uz' ? "Ochish" : lang === 'ru' ? "Открыть" : "Open"}
                         </a>
                       )}

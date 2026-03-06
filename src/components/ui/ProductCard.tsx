@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ShoppingBag } from 'lucide-react';
 import { useLang } from '@/contexts/LangContext';
 import { t, localizedField } from '@/lib/i18n';
+import { Product } from '@/types';
 
 interface ProductCardProps {
-  product: any;
+  product: Product;
   index?: number;
 }
 
@@ -21,73 +22,84 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.05, ease: 'easeOut' }}
+      transition={{ duration: 0.5, delay: index * 0.05, ease: 'easeOut' }}
+      className="group"
     >
-      <Link to={`/products/${product.id}`} className="group block">
-        <div className="rounded-2xl overflow-hidden bg-card border border-border/50 hover-lift">
-          {/* Image */}
-          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+      <Link to={`/products/${product.id}`} className="block h-full">
+        <div className="h-full flex flex-col rounded-[2rem] bg-card p-3 border border-border shadow-sm hover:shadow-water-lg transition-all duration-500 hover:-translate-y-1.5 overflow-hidden">
+
+          <div className="relative aspect-[4/3] rounded-[1.5rem] overflow-hidden bg-muted/50 mb-4">
             <img
-              src={product.image_url || product.images?.[0]?.url}
+              src={product.images?.[0] || product.image_url || '/placeholder.svg'}
               alt={name}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
-            {/* Overlay on hover */}
-            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
 
-            {/* Badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            <div className="absolute top-3 left-3 flex flex-col gap-2">
               {isNew && (
-                <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-accent text-accent-foreground tracking-wider">
+                <span className="px-3 py-1.5 text-[11px] font-bold uppercase rounded-xl glass text-primary tracking-widest shadow-sm">
                   {t('new_badge', lang)}
                 </span>
               )}
               {isDiscount && product.discount_percent && (
-                <span className="px-2.5 py-1 text-[10px] font-bold rounded-md bg-primary text-primary-foreground">
+                <span className="px-3 py-1.5 text-[11px] font-bold rounded-xl bg-red-500 text-white shadow-sm">
                   -{product.discount_percent}%
                 </span>
               )}
             </div>
 
-            {/* View button */}
-            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-              <div className="w-9 h-9 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground">
-                <ArrowRight size={16} />
+            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
+              <div className="w-10 h-10 rounded-full bg-card shadow-water flex items-center justify-center text-primary">
+                <ArrowRight size={18} />
               </div>
             </div>
           </div>
 
-          {/* Info */}
-          <div className="p-4">
+          <div className="px-3 pb-3 flex-1 flex flex-col">
             {product.category && (
-              <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+              <span className="text-[11px] font-bold text-accent uppercase tracking-widest mb-1.5">
                 {localizedField(product.category, 'name', lang)}
               </span>
             )}
-            <h3 className="font-display text-base font-semibold text-card-foreground line-clamp-2 mt-1 mb-2">{name}</h3>
-            <div className="flex items-center gap-2">
-              {isDiscount ? (
-                <>
-                  <span className="text-base font-bold text-primary">
-                    {Number(product.discount_price || product.price * (1 - product.discount_percent / 100)).toLocaleString()} so'm
+
+            <h3 className="font-display text-lg font-bold text-foreground line-clamp-2 leading-snug mb-3 flex-1">
+              {name}
+            </h3>
+
+            <div className="flex items-end justify-between mt-auto">
+              <div className="flex flex-col">
+                {isDiscount ? (
+                  <>
+                    <span className="text-xs text-muted-foreground font-medium line-through mb-0.5">
+                      {Number(product.original_price).toLocaleString()} so'm
+                    </span>
+                    <span className="text-lg font-black text-primary">
+                      {Number(product.discount_price || product.original_price * (1 - product.discount_percent / 100)).toLocaleString()} <span className="text-sm font-bold">so'm</span>
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-lg font-black text-foreground">
+                    {product.original_price ? `${Number(product.original_price).toLocaleString()} so'm` : ''}
                   </span>
-                  <span className="text-sm text-muted-foreground line-through">
-                    {Number(product.price).toLocaleString()}
+                )}
+                {isDiscount && daysLeft > 0 && (
+                  <span className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-wider">
+                    {daysLeft} {t('days_left', lang)} ⏳
                   </span>
-                </>
-              ) : (
-                <span className="text-base font-bold text-foreground">
-                  {product.price ? `${Number(product.price).toLocaleString()} so'm` : ''}
-                </span>
-              )}
+                )}
+              </div>
+
+              <div className="w-10 h-10 rounded-2xl bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                <ShoppingBag size={18} />
+              </div>
             </div>
-            {isDiscount && daysLeft > 0 && (
-              <p className="text-xs text-accent font-medium mt-2">{daysLeft} {t('days_left', lang)} ⏳</p>
-            )}
           </div>
+
         </div>
       </Link>
     </motion.div>
