@@ -96,7 +96,7 @@ export interface SiteSettings {
     instagram_url?: string;
     facebook_url?: string;
     youtube_url?: string;
-    map_embed_url?: string;
+    map_embed?: string;
     working_hours?: string;
     address_uz?: string;
     address_ru?: string;

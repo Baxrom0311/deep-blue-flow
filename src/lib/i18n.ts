@@ -7,7 +7,7 @@ const translations: Record<string, Record<Lang, string>> = {
   nav_certificates: { uz: "Sertifikatlar", ru: "Сертификаты", en: "Certificates" },
   nav_gallery: { uz: "Galereya", ru: "Галерея", en: "Gallery" },
   nav_contact: { uz: "Aloqa", ru: "Контакты", en: "Contact" },
-  hero_badge: { uz: "💧 Premium Tozalangan Suv", ru: "💧 Премиум Очищенная Вода", en: "💧 Premium Purified Water" },
+  hero_badge: { uz: "Premium Tozalangan Suv", ru: "Премиум Очищенная Вода", en: "Premium Purified Water" },
   hero_title: { uz: "Toza suv — hayot manbai", ru: "Чистая вода — источник жизни", en: "Pure water — source of life" },
   hero_subtitle: { uz: "Eng zamonaviy texnologiyalar yordamida tozalangan, sifat sertifikatlangan ichimlik suvi", ru: "Питьевая вода, очищенная с помощью современных технологий и сертифицированная по качеству", en: "Drinking water purified with modern technologies and quality certified" },
   hero_btn_products: { uz: "Mahsulotlar", ru: "Продукты", en: "Products" },

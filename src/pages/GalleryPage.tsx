@@ -3,13 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { Play, X, ArrowLeft, Droplets, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
-import { t, localizedField } from '@/lib/i18n';
+import { t, localizedField, Lang } from '@/lib/i18n';
 import { api } from '@/lib/api';
 
 /* ── Album Card with individual cover fetching ── */
 import { Album } from '@/types';
 
-const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: string; onClick: () => void; index: number }) => {
+const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: Lang; onClick: () => void; index: number }) => {
   const { data: albumDetail } = useQuery({
     queryKey: ['album-detail', album.id],
     queryFn: () => api.getAlbum(album.id),
@@ -78,12 +78,12 @@ const GalleryPage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative flex items-center justify-center gradient-hero overflow-hidden" style={{ minHeight: '45vh' }}>
+      <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-36 pb-20">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute w-[500px] h-[500px] rounded-full bg-primary/8 dark:bg-primary/5 blur-[120px] top-0 right-0" style={{ animation: 'float 12s ease-in-out infinite' }} />
           <div className="absolute w-[400px] h-[400px] rounded-full bg-accent/6 dark:bg-accent/3 blur-[100px] bottom-0 left-0" style={{ animation: 'float-slow 10s ease-in-out 2s infinite' }} />
         </div>
-        <div className="relative z-10 text-center container mx-auto px-4 pt-24">
+        <div className="relative z-10 text-center container mx-auto px-4">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

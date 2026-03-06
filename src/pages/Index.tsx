@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, ArrowRight, Droplets, Shield, Award, Zap, ShieldCheck, Image as ImageIcon } from 'lucide-react';
+import { ArrowRight, ImageIcon, Droplets, MapPin, Shield, Zap, Award, ShieldCheck, FileText, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -20,7 +20,7 @@ const AboutPreview = () => {
   const { lang } = useLang();
   const settings = useSettings();
   return (
-    <section className="relative overflow-hidden gradient-hero" style={{ minHeight: '90vh' }}>
+    <section className="relative overflow-hidden gradient-hero" style={{ minHeight: '80vh' }}>
       {/* Animated gradient orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute w-[700px] h-[700px] rounded-full bg-primary/8 dark:bg-primary/5 blur-[150px] -top-40 -left-40" style={{ animation: 'float 12s ease-in-out infinite' }} />
@@ -35,7 +35,7 @@ const AboutPreview = () => {
         }}
       />
 
-      <div className="relative z-10 container mx-auto px-4 pt-28 pb-16">
+      <div className="relative z-10 container mx-auto px-4 pt-40 pb-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text content */}
           <motion.div
@@ -87,7 +87,7 @@ const AboutPreview = () => {
             >
               <Link
                 to="/products"
-                className="group px-7 py-3.5 rounded-2xl gradient-ocean text-white font-bold transition-all shadow-water-lg hover:-translate-y-1.5 hover:shadow-glow flex items-center gap-2 text-sm"
+                className="group px-7 py-3.5 rounded-2xl gradient-ocean text-primary-foreground font-bold transition-all shadow-water-lg hover:-translate-y-1.5 hover:shadow-glow flex items-center gap-2 text-sm"
               >
                 {t('hero_btn_products', lang)}
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -112,13 +112,13 @@ const AboutPreview = () => {
               <img
                 src="/images/about.jpg"
                 alt="ECO COMPANY"
-                className="w-full h-[480px] object-cover"
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl gradient-ocean flex items-center justify-center shadow-water">
-                    <Droplets size={20} className="text-white" />
+                    <Droplets size={20} className="text-primary-foreground" />
                   </div>
                 </div>
               </div>
@@ -157,7 +157,7 @@ const StatCard = ({ value, suffix, label, delay, icon: Icon }: { value: number; 
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="relative z-10">
         <div className="w-14 h-14 rounded-2xl gradient-ocean flex items-center justify-center mx-auto mb-5 shadow-water group-hover:scale-110 transition-transform duration-500">
-          <Icon size={26} className="text-white" />
+          <Icon size={26} className="text-primary-foreground" />
         </div>
         <div className="font-display text-4xl md:text-5xl font-black text-foreground mb-2 tracking-tight">
           {isVisible ? count : 0}{suffix}
@@ -441,15 +441,22 @@ const CertificatesCarousel = () => {
               viewport={{ once: true }}
               transition={{ delay: i * 0.08, duration: 0.5 }}
             >
-              <Link to="/certificates" className="block group">
+              <Link to={cert.file_url || "/certificates"} target={cert.file_url ? "_blank" : undefined} rel="noopener noreferrer" className="block group">
                 <div className="rounded-[1.5rem] overflow-hidden bg-background border border-border shadow-sm hover-lift p-2">
-                  <div className="aspect-[3/4] rounded-[1.2rem] overflow-hidden bg-muted/50 relative">
-                    <img
-                      src={cert.preview_url || cert.image_url || cert.file_url}
-                      alt={localizedField(cert, 'title', lang)}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      loading="lazy"
-                    />
+                  <div className="aspect-[3/4] rounded-[1.2rem] overflow-hidden bg-muted/50 relative group/img">
+                    {(cert.preview_url || cert.image_url) || cert.file_type !== 'pdf' ? (
+                      <img
+                        src={cert.preview_url || cert.image_url || cert.file_url}
+                        alt={localizedField(cert, 'title', lang)}
+                        className="w-full h-full object-contain p-2 bg-white dark:bg-card group-hover/img:scale-105 transition-transform duration-700"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-2 bg-white dark:bg-card group-hover/img:scale-105 transition-transform duration-700 text-muted-foreground">
+                        <FileText size={48} className="mb-2 opacity-50" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">PDF</span>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs font-bold text-center text-muted-foreground mt-3 mb-1 line-clamp-1 px-1">{localizedField(cert, 'title', lang)}</p>
                 </div>
@@ -466,10 +473,10 @@ const CertificatesCarousel = () => {
 const HomePage = () => (
   <>
     <AboutPreview />
-    <StatsSection />
-    <ProductsCarousel />
-    <GalleryCarousel />
     <CertificatesCarousel />
+    <ProductsCarousel />
+    <StatsSection />
+    <GalleryCarousel />
   </>
 );
 

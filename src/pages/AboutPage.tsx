@@ -38,12 +38,12 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero with gradient mesh */}
-      <section className="relative flex items-center justify-center gradient-hero overflow-hidden" style={{ minHeight: '50vh' }}>
+      <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-36 pb-20">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute w-[500px] h-[500px] rounded-full bg-primary/8 dark:bg-primary/5 blur-[120px] -top-20 -right-20" style={{ animation: 'float 12s ease-in-out infinite' }} />
           <div className="absolute w-[400px] h-[400px] rounded-full bg-accent/6 dark:bg-accent/3 blur-[100px] bottom-0 left-0" style={{ animation: 'float-slow 10s ease-in-out 2s infinite' }} />
         </div>
-        <div className="relative z-10 text-center container mx-auto px-4 pt-24">
+        <div className="relative z-10 text-center container mx-auto px-4">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

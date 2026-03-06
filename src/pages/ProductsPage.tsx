@@ -32,7 +32,7 @@ const ProductsPage = () => {
     : items;
 
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-background gradient-mesh relative overflow-hidden">
+    <div className="pt-36 pb-20 min-h-screen bg-background gradient-mesh relative overflow-hidden">
       {/* Decorative Background */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-water-teal/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-water-blue/5 blur-[150px] rounded-full pointer-events-none" />
@@ -74,7 +74,7 @@ const ProductsPage = () => {
               <button
                 onClick={() => { setCategoryId(undefined); setPage(1); }}
                 className={`shrink-0 px-5 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${!categoryId
-                  ? 'bg-primary text-white shadow-md hover:-translate-y-0.5'
+                  ? 'bg-primary text-primary-foreground shadow-md hover:-translate-y-0.5'
                   : 'bg-card text-muted-foreground hover:text-foreground border border-border hover:border-primary/40 shadow-sm'
                   }`}
               >
@@ -85,7 +85,7 @@ const ProductsPage = () => {
                   key={c.id}
                   onClick={() => { setCategoryId(c.id); setPage(1); }}
                   className={`shrink-0 px-5 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${categoryId === c.id
-                    ? 'bg-primary text-white shadow-md hover:-translate-y-0.5'
+                    ? 'bg-primary text-primary-foreground shadow-md hover:-translate-y-0.5'
                     : 'bg-card text-muted-foreground hover:text-foreground border border-border hover:border-primary/40 shadow-sm'
                     }`}
                 >
@@ -131,7 +131,7 @@ const ProductsPage = () => {
                 key={i}
                 onClick={() => setPage(i + 1)}
                 className={`w-12 h-12 rounded-full flex items-center justify-center text-base font-black transition-all duration-300 ${page === i + 1
-                  ? 'bg-primary text-white shadow-water hover:-translate-y-0.5'
+                  ? 'bg-primary text-primary-foreground shadow-water hover:-translate-y-0.5'
                   : 'bg-card text-muted-foreground hover:text-foreground border border-border hover:border-primary shadow-sm'
                   }`}
               >

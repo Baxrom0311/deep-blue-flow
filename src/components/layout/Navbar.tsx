@@ -47,15 +47,15 @@ const Navbar = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${showSolid
-          ? 'bg-white/80 dark:bg-card/80 backdrop-blur-2xl py-3 shadow-sm border-b border-border'
-          : 'bg-transparent py-6'
-          }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-4 sm:px-6 lg:px-8 ${showSolid ? 'pt-4' : 'pt-6'}`}
       >
-        <div className="container mx-auto px-4 flex items-center justify-between">
+        <div className={`mx-auto max-w-7xl flex items-center justify-between transition-all duration-500 ${showSolid
+          ? 'glass py-3 px-4 lg:px-6 rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] border border-white/40 dark:border-white/10 bg-white/60 dark:bg-[#0a0f1c]/60'
+          : 'bg-transparent py-2 px-4 lg:px-6'
+          }`}>
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-card border border-border shadow-sm flex items-center justify-center p-1">
+            <div className="w-10 h-10 rounded-xl bg-white/60 dark:bg-white/10 border border-white/50 dark:border-white/5 shadow-sm flex items-center justify-center p-1 backdrop-blur-md">
               <img src={settings.logo_url || '/favicon.svg'} alt="ECO" className="h-full w-full object-contain" />
             </div>
             <div className="flex flex-col">
@@ -99,7 +99,7 @@ const Navbar = () => {
                   aria-label={`Tilni almashtirish: ${l.code.toUpperCase()}`}
                   aria-pressed={lang === l.code}
                   className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${lang === l.code
-                    ? 'bg-primary text-white shadow-sm'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                     }`}
                 >

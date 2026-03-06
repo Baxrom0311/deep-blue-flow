@@ -280,6 +280,16 @@
 }
 
 /* ── Keyframe animations ── */
+@keyframes marquee-dynamic {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(var(--marquee-width, -50%));
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: 200% 0;

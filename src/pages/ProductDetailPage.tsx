@@ -31,7 +31,7 @@ const ProductDetailPage = () => {
   });
 
   if (isLoading) return (
-    <div className="pt-32 pb-20 min-h-screen bg-background">
+    <div className="pt-36 pb-20 min-h-screen bg-background">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
           <div className="aspect-[4/3] md:aspect-square rounded-[2.5rem] bg-card border border-border shadow-sm shimmer" />
@@ -55,7 +55,7 @@ const ProductDetailPage = () => {
   const relatedItems = related?.items || [];
 
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-gradient-to-b from-sky-50/50 to-background dark:from-[hsl(222,47%,8%)] dark:to-background relative overflow-hidden">
+    <div className="pt-36 pb-20 min-h-screen bg-gradient-to-b from-sky-50/50 to-background dark:from-[hsl(222,47%,8%)] dark:to-background relative overflow-hidden">
       {/* Background Orbs */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-water-teal/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-water-blue/5 blur-[150px] rounded-full pointer-events-none" />
@@ -83,7 +83,7 @@ const ProductDetailPage = () => {
             className="sticky top-32"
           >
             <div className="aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-card shadow-water-lg border border-border mb-6 group relative">
-              <img src={images[mainImage]} alt={name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img src={images[mainImage]} alt={name} className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105" />
               {isDiscount && product.discount_percent && (
                 <div className="absolute top-6 left-6 px-4 py-2 rounded-2xl bg-red-500 text-white font-black shadow-lg">
                   -{product.discount_percent}%
@@ -102,7 +102,7 @@ const ProductDetailPage = () => {
                       : 'border-2 border-white hover:border-slate-200 shadow-sm opacity-70 hover:opacity-100'
                       }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt="" className="w-full h-full object-contain p-2" />
                   </button>
                 ))}
               </div>
@@ -159,7 +159,7 @@ const ProductDetailPage = () => {
                 href={settings.whatsapp_url || `https://wa.me/${(settings.phone_1 || '').replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 px-8 py-4 rounded-2xl bg-primary text-white font-bold flex items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-water-lg transition-all text-lg"
+                className="flex-1 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold flex items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-water-lg transition-all text-lg"
               >
                 <ShoppingBag size={22} /> {t('order_btn', lang)}
               </a>

@@ -14,24 +14,47 @@ const ContactPage = () => {
   const [form, setForm] = useState<ContactFormData>({ name: '', email: '', phone: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);
 
+  let mapUrl = s.map_embed || '';
+  if (mapUrl.includes('<iframe') && mapUrl.includes('src=')) {
+    const match = mapUrl.match(/src="([^"]+)"/);
+    if (match && match[1]) {
+      mapUrl = match[1];
+    }
+  } else if (mapUrl && !mapUrl.includes('output=embed') && !mapUrl.includes('/embed')) {
+    const llMatch = mapUrl.match(/ll=([\d.-]+,[\d.-]+)/);
+    const atMatch = mapUrl.match(/@([\d.-]+,[\d.-]+)/);
+    const qMatch = mapUrl.match(/[?&]q=([^&]+)/);
+    const coords = (llMatch && llMatch[1]) || (atMatch && atMatch[1]) || (qMatch && qMatch[1]);
+    if (coords) {
+      mapUrl = `https://maps.google.com/maps?q=${coords}&z=15&output=embed`;
+    }
+  }
+
   const mutation = useMutation({
-    mutationFn: () => api.submitContact(form),
+    mutationFn: () => {
+      // Create cleaned payload without empty strings to pass backend Pydantic validation
+      const payload: Partial<ContactFormData> = { ...form };
+      if (!payload.email?.trim()) delete payload.email;
+      if (!payload.subject?.trim()) delete payload.subject;
+      if (!payload.phone?.trim()) delete payload.phone;
+
+      return api.submitContact(payload as ContactFormData);
+    },
     onSuccess: () => { setSent(true); setForm({ name: '', email: '', phone: '', subject: '', message: '' }); },
   });
 
   const infos = [
     { icon: Phone, label: s.phone_1, href: `tel:${s.phone_1}`, title: lang === 'uz' ? 'Telefon' : lang === 'ru' ? 'Телефон' : 'Phone' },
     { icon: Mail, label: s.email, href: `mailto:${s.email}`, title: 'Email' },
-    { icon: MapPin, label: localizedField(s, 'address', lang), title: lang === 'uz' ? 'Manzil' : lang === 'ru' ? 'Адрес' : 'Address' },
     { icon: Clock, label: s.working_hours, title: lang === 'uz' ? 'Ish vaqti' : lang === 'ru' ? 'Время работы' : 'Hours' },
   ].filter(i => i.label);
 
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative flex items-center justify-center bg-gradient-to-b from-sky-50 to-white dark:from-[hsl(222,47%,8%)] dark:to-background overflow-hidden" style={{ minHeight: '45vh' }}>
-        <div className="absolute w-[500px] h-[500px] rounded-full bg-water-teal/10 blur-[120px] -bottom-20 -left-20 pointer-events-none" />
-        <div className="relative z-10 text-center container mx-auto px-4 pt-24">
+      <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-36 pb-20">
+        <div className="absolute w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] -bottom-20 -left-20 pointer-events-none" />
+        <div className="relative z-10 text-center container mx-auto px-4">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -50,74 +73,79 @@ const ContactPage = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-card">
+      <section className="py-24 gradient-section">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-5 gap-12">
             {/* Form */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-3 bg-card rounded-[2rem] p-8 md:p-12 border border-border shadow-water"
+              className="lg:col-span-3 gradient-card hover-glow rounded-[2rem] p-8 md:p-12 border border-border shadow-water relative group overflow-hidden"
             >
-              {sent ? (
-                <div className="text-center py-16">
-                  <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 shadow-sm border border-emerald-500/20">
-                    <CheckCircle size={32} className="text-emerald-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="relative z-10">
+                {sent ? (
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 shadow-sm border border-emerald-500/20">
+                      <CheckCircle size={32} className="text-emerald-500" />
+                    </div>
+                    <h3 className="font-display text-2xl font-black text-foreground mb-3">{t('contact_success', lang)}</h3>
+                    <p className="text-muted-foreground text-base font-body">
+                      {lang === 'uz' ? "Tez orada siz bilan bog'lanamiz" : lang === 'ru' ? 'Мы свяжемся с вами в ближайшее время' : "We'll get back to you soon"}
+                    </p>
                   </div>
-                  <h3 className="font-display text-2xl font-black text-foreground mb-3">{t('contact_success', lang)}</h3>
-                  <p className="text-muted-foreground text-base font-body">
-                    {lang === 'uz' ? "Tez orada siz bilan bog'lanamiz" : lang === 'ru' ? 'Мы свяжемся с вами в ближайшее время' : "We'll get back to you soon"}
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={e => { e.preventDefault(); mutation.mutate(); }} className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    {[
-                      { key: 'name', type: 'text', required: true },
-                      { key: 'phone', type: 'tel', required: true },
-                      { key: 'email', type: 'email' },
-                      { key: 'subject', type: 'text' },
-                    ].map(f => (
-                      <div key={f.key}>
-                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2.5 block">
-                          {t(`contact_${f.key}`, lang)}{f.required ? ' *' : ''}
-                        </label>
-                        <input
-                          type={f.type}
-                          value={form[f.key as keyof ContactFormData]}
-                          onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
-                          required={f.required}
-                          className="w-full px-5 py-3.5 rounded-2xl bg-muted border border-border text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2.5 block">
-                      {t('contact_message', lang)} *
-                    </label>
-                    <textarea
-                      value={form.message}
-                      onChange={e => setForm(prev => ({ ...prev, message: e.target.value }))}
-                      required
-                      rows={5}
-                      className="w-full px-5 py-3.5 rounded-2xl bg-muted border border-border text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={mutation.isPending}
-                    className="w-full py-4.5 rounded-2xl bg-primary text-white font-bold hover:-translate-y-0.5 hover:shadow-water-lg transition-all disabled:opacity-50 flex items-center justify-center gap-3 text-base"
-                  >
-                    {mutation.isPending ? '...' : (
-                      <>
-                        <Send size={18} />
-                        {t('contact_send', lang)}
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
+                ) : (
+                  <form onSubmit={e => { e.preventDefault(); mutation.mutate(); }} className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {[
+                        { key: 'name', type: 'text', required: true },
+                        { key: 'phone', type: 'tel', required: true },
+                        { key: 'email', type: 'email' },
+                        { key: 'subject', type: 'text' },
+                      ].map(f => (
+                        <div key={f.key}>
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2.5 block">
+                            {t(`contact_${f.key}`, lang)}{f.required ? ' *' : ''}
+                          </label>
+                          <input
+                            type={f.type}
+                            value={form[f.key as keyof ContactFormData]}
+                            onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                            required={f.required}
+                            className="w-full px-5 py-4 rounded-2xl bg-muted/50 dark:bg-muted border border-border text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-background transition-all"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2.5 block">
+                        {t('contact_message', lang)} *
+                      </label>
+                      <textarea
+                        value={form.message}
+                        onChange={e => setForm(prev => ({ ...prev, message: e.target.value }))}
+                        required
+                        minLength={10}
+                        maxLength={2000}
+                        rows={5}
+                        className="w-full px-5 py-4 rounded-2xl bg-muted/50 dark:bg-muted border border-border text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-background transition-all resize-none"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={mutation.isPending}
+                      className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold hover:-translate-y-0.5 hover:shadow-water-lg transition-all disabled:opacity-50 flex items-center justify-center gap-3 text-base mt-2"
+                    >
+                      {mutation.isPending ? '...' : (
+                        <>
+                          <Send size={18} />
+                          {t('contact_send', lang)}
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
             </motion.div>
 
             {/* Info */}
@@ -128,8 +156,9 @@ const ContactPage = () => {
               className="lg:col-span-2 space-y-5"
             >
               {infos.map((info, i) => (
-                <div key={i} className="p-6 rounded-[1.5rem] bg-card border border-border shadow-sm hover-lift">
-                  <div className="flex items-start gap-4">
+                <div key={i} className="p-6 rounded-[1.5rem] gradient-card border border-border shadow-sm hover-lift group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="flex items-start gap-4 relative z-10">
                     <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
                       <info.icon size={20} className="text-primary" />
                     </div>
@@ -145,13 +174,14 @@ const ContactPage = () => {
                 </div>
               ))}
 
-              {s.map_embed_url && (
-                <div className="rounded-[1.5rem] overflow-hidden border border-border shadow-sm h-56">
+              {mapUrl && (
+                <div className="rounded-[1.5rem] overflow-hidden border border-border shadow-sm h-64 mt-4 bg-muted">
                   <iframe
-                    src={s.map_embed_url}
-                    className="w-full h-full border-0"
+                    src={mapUrl}
+                    className="w-full h-full border-0 dark:grayscale-[0.2] dark:invert-[1] dark:contrast-[0.8] dark:hue-rotate-180 transition-all duration-700"
                     loading="lazy"
                     allowFullScreen
+                    title="Location Map"
                   />
                 </div>
               )}

@@ -34,7 +34,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
             <img
               src={product.images?.[0] || product.image_url || '/placeholder.svg'}
               alt={name}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-full object-contain p-4 drop-shadow-md transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
 
@@ -94,7 +94,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
                 )}
               </div>
 
-              <div className="w-10 h-10 rounded-2xl bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+              <div className="w-10 h-10 rounded-2xl bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                 <ShoppingBag size={18} />
               </div>
             </div>
