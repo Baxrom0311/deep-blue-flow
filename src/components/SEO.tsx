@@ -56,8 +56,6 @@ const SEO = ({
     const canonicalUrl = `${SITE_URL}${canonicalPath || location.pathname}`;
     const ogImage = absoluteUrl(image);
     const robots = noindex ? 'noindex, nofollow' : 'index, follow';
-    const verification = import.meta.env.VITE_GOOGLE_SITE_VERIFICATION;
-
     document.title = fullTitle;
     document.documentElement.lang = lang;
 
@@ -77,13 +75,6 @@ const SEO = ({
     upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: ogImage });
     upsertMeta('meta[name="twitter:image:alt"]', { name: 'twitter:image:alt', content: fullTitle });
     upsertLink('link[rel="canonical"]', { rel: 'canonical', href: canonicalUrl });
-
-    if (verification) {
-      upsertMeta('meta[name="google-site-verification"]', {
-        name: 'google-site-verification',
-        content: verification,
-      });
-    }
 
     const existingJsonLd = document.head.querySelector('#seo-structured-data');
     if (existingJsonLd) existingJsonLd.remove();
