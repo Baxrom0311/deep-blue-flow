@@ -33,7 +33,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           <div className="relative aspect-[4/3] rounded-[1.5rem] overflow-hidden bg-muted/50 mb-4">
             <img
               src={product.images?.[0] || product.image_url || '/placeholder.svg'}
-              alt={name}
+              alt={`${name} | ECO COMPANY`}
               className="w-full h-full object-contain p-4 drop-shadow-md transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />

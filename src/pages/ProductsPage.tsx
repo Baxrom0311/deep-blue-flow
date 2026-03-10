@@ -7,6 +7,8 @@ import { t, localizedField } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import SkeletonCard from '@/components/ui/SkeletonCard';
+import SEO from '@/components/SEO';
+import { buildBreadcrumbSchema, buildCollectionPageSchema, sanitizeDescription } from '@/lib/seo';
 import { Product, Category, PaginatedResponse } from '@/types';
 
 const ProductsPage = () => {
@@ -32,9 +34,39 @@ const ProductsPage = () => {
   const items = products?.items || [];
   const totalPages = products?.total_pages || products?.pages || 1;
   const cats = categories || [];
+  const activeCategory = cats.find((category) => category.id === categoryId);
+  const pageTitle = activeCategory
+    ? `${localizedField(activeCategory, 'name', lang)} | ECO COMPANY`
+    : `${t('nav_products', lang)} | ECO COMPANY`;
+  const pageDescription = sanitizeDescription(
+    activeCategory
+      ? `${localizedField(activeCategory, 'name', lang)} katalogi va premium tozalangan suv mahsulotlari.`
+      : "Premium tozalangan suv mahsulotlari katalogi va buyurtma uchun mavjud barcha pozitsiyalar.",
+  );
 
   return (
     <div className="pt-36 pb-20 min-h-screen bg-background gradient-mesh relative overflow-hidden">
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonicalPath="/products"
+        lang={lang}
+        structuredData={[
+          buildBreadcrumbSchema([
+            { name: t('nav_home', lang), path: '/' },
+            { name: t('nav_products', lang), path: '/products' },
+          ]),
+          buildCollectionPageSchema({
+            name: pageTitle,
+            description: pageDescription,
+            path: '/products',
+            items: items.map((item) => ({
+              name: localizedField(item, 'name', lang) || 'Product',
+              path: `/products/${item.id}`,
+            })),
+          }),
+        ]}
+      />
       {/* Decorative Background */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-water-teal/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-water-blue/5 blur-[150px] rounded-full pointer-events-none" />

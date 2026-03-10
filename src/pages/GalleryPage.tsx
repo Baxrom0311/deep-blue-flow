@@ -6,6 +6,8 @@ import { useLang } from '@/contexts/LangContext';
 import { t, localizedField, Lang } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import MediaLightbox from '@/components/ui/MediaLightbox';
+import SEO from '@/components/SEO';
+import { buildBreadcrumbSchema, buildCollectionPageSchema, sanitizeDescription } from '@/lib/seo';
 
 /* ── Album Card with individual cover fetching ── */
 import { Album, AlbumItem } from '@/types';
@@ -101,8 +103,33 @@ const GalleryPage = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  const selectedAlbumTitle = selectedAlbumId && albumDetail
+    ? localizedField(albumDetail, 'title', lang)
+    : t('gallery_title', lang);
+
   return (
     <div className="min-h-screen">
+      <SEO
+        title={`${selectedAlbumTitle} | ECO COMPANY`}
+        description={sanitizeDescription("ECO COMPANY galereyasi, o'rnatish jarayonlari va kompaniya faoliyatidan lavhalar.")}
+        canonicalPath="/gallery"
+        lang={lang}
+        structuredData={[
+          buildBreadcrumbSchema([
+            { name: t('nav_home', lang), path: '/' },
+            { name: t('nav_gallery', lang), path: '/gallery' },
+          ]),
+          buildCollectionPageSchema({
+            name: `${t('gallery_title', lang)} | ECO COMPANY`,
+            description: sanitizeDescription("ECO COMPANY galereyasi, o'rnatish jarayonlari va kompaniya faoliyatidan lavhalar."),
+            path: '/gallery',
+            items: albums.map((album) => ({
+              name: localizedField(album, 'title', lang) || 'Gallery album',
+              path: '/gallery',
+            })),
+          }),
+        ]}
+      />
       {/* Hero */}
       <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-36 pb-20">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -191,7 +218,7 @@ const GalleryPage = () => {
                       ) : (
                         <img
                           src={previewUrl || mediaUrl}
-                          alt=""
+                          alt={`${localizedField(albumDetail || {}, 'title', lang)} - ${isVideo ? 'video preview' : 'image'}`}
                           className="w-full rounded-2xl group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
                         />

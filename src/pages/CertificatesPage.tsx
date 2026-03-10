@@ -7,6 +7,8 @@ import { t, localizedField } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Certificate, PaginatedResponse } from '@/types';
 import MediaLightbox from '@/components/ui/MediaLightbox';
+import SEO from '@/components/SEO';
+import { buildBreadcrumbSchema, buildCollectionPageSchema, sanitizeDescription } from '@/lib/seo';
 
 const CertificatesPage = () => {
   const { lang } = useLang();
@@ -16,6 +18,27 @@ const CertificatesPage = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title={`${t('certificates_title', lang)} | ECO COMPANY`}
+        description={sanitizeDescription("ECO COMPANY sertifikatlari va sifatni tasdiqlovchi hujjatlar ro'yxati.")}
+        canonicalPath="/certificates"
+        lang={lang}
+        structuredData={[
+          buildBreadcrumbSchema([
+            { name: t('nav_home', lang), path: '/' },
+            { name: t('nav_certificates', lang), path: '/certificates' },
+          ]),
+          buildCollectionPageSchema({
+            name: `${t('certificates_title', lang)} | ECO COMPANY`,
+            description: sanitizeDescription("ECO COMPANY sertifikatlari va sifatni tasdiqlovchi hujjatlar ro'yxati."),
+            path: '/certificates',
+            items: certs.map((cert) => ({
+              name: localizedField(cert, 'title', lang) || 'Certificate',
+              path: '/certificates',
+            })),
+          }),
+        ]}
+      />
       {/* Hero */}
       <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-36 pb-16">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

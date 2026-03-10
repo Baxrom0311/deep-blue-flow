@@ -8,6 +8,8 @@ import { t, localizedField } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import { useState } from 'react';
+import SEO from '@/components/SEO';
+import { buildBreadcrumbSchema, buildProductSchema, sanitizeDescription } from '@/lib/seo';
 import { Product, PaginatedResponse } from '@/types';
 
 const ProductDetailPage = () => {
@@ -30,20 +32,37 @@ const ProductDetailPage = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  const productName = product ? localizedField(product, 'name', lang) : t('nav_products', lang);
+  const productDescription = sanitizeDescription(
+    product
+      ? localizedField(product, 'desc', lang) || localizedField(product, 'description', lang)
+      : "Premium tozalangan suv mahsuloti haqida batafsil ma'lumot.",
+  );
+  const seoImage = product?.images?.[0] || product?.image_url || '/images/about.jpg';
+
   if (isLoading) return (
-    <div className="pt-36 pb-20 min-h-screen bg-background">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
-          <div className="aspect-[4/3] md:aspect-square rounded-[2.5rem] bg-card border border-border shadow-sm shimmer" />
-          <div className="space-y-6 py-8">
-            <div className="h-6 w-1/4 rounded-xl skeleton shimmer" />
-            <div className="h-12 w-3/4 rounded-xl skeleton shimmer" />
-            <div className="h-8 w-1/3 rounded-xl skeleton shimmer" />
-            <div className="h-32 w-full rounded-2xl skeleton shimmer mt-8" />
+    <>
+      <SEO
+        title={`${productName} | ECO COMPANY`}
+        description={productDescription}
+        image={seoImage}
+        canonicalPath={id ? `/products/${id}` : '/products'}
+        lang={lang}
+      />
+      <div className="pt-36 pb-20 min-h-screen bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
+            <div className="aspect-[4/3] md:aspect-square rounded-[2.5rem] bg-card border border-border shadow-sm shimmer" />
+            <div className="space-y-6 py-8">
+              <div className="h-6 w-1/4 rounded-xl skeleton shimmer" />
+              <div className="h-12 w-3/4 rounded-xl skeleton shimmer" />
+              <div className="h-8 w-1/3 rounded-xl skeleton shimmer" />
+              <div className="h-32 w-full rounded-2xl skeleton shimmer mt-8" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 
   if (!product) return null;
@@ -56,6 +75,21 @@ const ProductDetailPage = () => {
 
   return (
     <div className="pt-36 pb-20 min-h-screen bg-gradient-to-b from-sky-50/50 to-background dark:from-[hsl(222,47%,8%)] dark:to-background relative overflow-hidden">
+      <SEO
+        title={`${name} | ECO COMPANY`}
+        description={productDescription}
+        image={seoImage}
+        canonicalPath={`/products/${product.id}`}
+        lang={lang}
+        structuredData={[
+          buildBreadcrumbSchema([
+            { name: t('nav_home', lang), path: '/' },
+            { name: t('nav_products', lang), path: '/products' },
+            { name, path: `/products/${product.id}` },
+          ]),
+          buildProductSchema(product, lang),
+        ]}
+      />
       {/* Background Orbs */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-water-teal/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-water-blue/5 blur-[150px] rounded-full pointer-events-none" />
@@ -101,8 +135,8 @@ const ProductDetailPage = () => {
                       ? 'border-4 border-primary shadow-md ring-4 ring-primary/20 scale-105'
                       : 'border-2 border-white hover:border-slate-200 shadow-sm opacity-70 hover:opacity-100'
                       }`}
-                  >
-                    <img src={img} alt="" className="w-full h-full object-contain p-2" />
+                    >
+                    <img src={img} alt={`${name} - image ${i + 1}`} className="w-full h-full object-contain p-2" />
                   </button>
                 ))}
               </div>

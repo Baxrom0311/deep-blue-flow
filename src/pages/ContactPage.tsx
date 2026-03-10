@@ -7,6 +7,8 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { t, localizedField } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { ContactFormData } from '@/types';
+import SEO from '@/components/SEO';
+import { buildBreadcrumbSchema, buildLocalBusinessSchema, sanitizeDescription } from '@/lib/seo';
 
 const ContactPage = () => {
   const { lang } = useLang();
@@ -49,8 +51,26 @@ const ContactPage = () => {
     { icon: Clock, label: s.working_hours, title: lang === 'uz' ? 'Ish vaqti' : lang === 'ru' ? 'Время работы' : 'Hours' },
   ].filter(i => i.label);
 
+  const contactDescription = sanitizeDescription(
+    `${localizedField(s, 'address', lang) || ''} ${s.phone_1 || ''} ${s.email || ''}`.trim()
+      || "ECO COMPANY bilan bog'lanish uchun telefon, email va manzil ma'lumotlari.",
+  );
+
   return (
     <div className="min-h-screen overflow-x-hidden">
+      <SEO
+        title={`${t('contact_title', lang)} | ECO COMPANY`}
+        description={contactDescription}
+        canonicalPath="/contact"
+        lang={lang}
+        structuredData={[
+          buildBreadcrumbSchema([
+            { name: t('nav_home', lang), path: '/' },
+            { name: t('nav_contact', lang), path: '/contact' },
+          ]),
+          buildLocalBusinessSchema(s, lang),
+        ]}
+      />
       {/* Hero */}
       <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-32 pb-14 sm:pt-36 sm:pb-20">
         <div className="absolute w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] -bottom-20 -left-20 pointer-events-none" />

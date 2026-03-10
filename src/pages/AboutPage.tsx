@@ -3,6 +3,8 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { t, localizedField, Lang } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 import { Droplets, Shield, Award, Truck, Clock, Heart } from 'lucide-react';
+import SEO from '@/components/SEO';
+import { buildBreadcrumbSchema, sanitizeDescription } from '@/lib/seo';
 
 const values = [
   { icon: Droplets, key: 'purity' },
@@ -62,6 +64,17 @@ const AboutPage = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden">
+      <SEO
+        title={`${aboutPageTitle} | ECO COMPANY`}
+        description={sanitizeDescription(aboutSectionText)}
+        image="/images/about.jpg"
+        lang={lang}
+        canonicalPath="/about"
+        structuredData={buildBreadcrumbSchema([
+          { name: t('nav_home', lang), path: '/' },
+          { name: t('nav_about', lang), path: '/about' },
+        ])}
+      />
       {/* Hero with gradient mesh */}
       <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-32 pb-14 sm:pt-36 sm:pb-20">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -13,6 +13,8 @@ import WaveDivider from '@/components/layout/WaveDivider';
 import ProductCard from '@/components/ui/ProductCard';
 import SkeletonCard from '@/components/ui/SkeletonCard';
 import MediaLightbox from '@/components/ui/MediaLightbox';
+import SEO from '@/components/SEO';
+import { buildOrganizationSchema, buildWebsiteSchema, sanitizeDescription } from '@/lib/seo';
 import { Product, Album, Certificate, InstagramVideo, PaginatedResponse } from '@/types';
 
 
@@ -575,15 +577,34 @@ const CertificatesCarousel = () => {
 };
 
 /* ── Home ── */
-const HomePage = () => (
-  <>
-    <AboutPreview />
-    <CertificatesCarousel />
-    <ProductsCarousel />
-    <StatsSection />
-    <GalleryCarousel />
-    <InstagramVideosSection />
-  </>
-);
+const HomePage = () => {
+  const { lang } = useLang();
+  const settings = useSettings();
+  const title = `${settings.hero_badge || t('hero_badge', lang)} | ECO COMPANY`;
+  const description = sanitizeDescription(
+    localizedField(settings, 'hero_subtitle', lang) || localizedField(settings, 'about_text', lang),
+  );
+
+  return (
+    <>
+      <SEO
+        title={title}
+        description={description}
+        image="/images/about.jpg"
+        lang={lang}
+        structuredData={[
+          buildWebsiteSchema(),
+          buildOrganizationSchema(settings, lang),
+        ]}
+      />
+      <AboutPreview />
+      <CertificatesCarousel />
+      <ProductsCarousel />
+      <StatsSection />
+      <GalleryCarousel />
+      <InstagramVideosSection />
+    </>
+  );
+};
 
 export default HomePage;
