@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Play, X, ArrowLeft, Droplets, Image as ImageIcon } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Play, ArrowLeft, Droplets, Image as ImageIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { t, localizedField, Lang } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import MediaLightbox from '@/components/ui/MediaLightbox';
 
 /* ── Album Card with individual cover fetching ── */
-import { Album } from '@/types';
+import { Album, AlbumItem } from '@/types';
+
+const getMediaUrl = (item?: AlbumItem | null) =>
+  item?.file_url || item?.url || item?.image_url || item?.thumbnail_url || null;
+
+const getPreviewUrl = (item?: AlbumItem | null) =>
+  item?.thumbnail_url || item?.image_url || item?.file_url || item?.url || null;
 
 const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: Lang; onClick: () => void; index: number }) => {
   const { data: albumDetail } = useQuery({
@@ -16,7 +23,10 @@ const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: Lang; 
     staleTime: 10 * 60 * 1000,
   });
 
-  const coverImg = albumDetail?.items?.[0]?.thumbnail_url || albumDetail?.items?.[0]?.file_url || album.cover_url || album.cover_image || null;
+  const coverItem = albumDetail?.items?.[0];
+  const coverIsVideo = coverItem?.file_type === 'video';
+  const coverImg = getPreviewUrl(coverItem) || album.cover_url || album.cover_image || null;
+  const coverVideoUrl = coverIsVideo ? getMediaUrl(coverItem) : null;
   const photoCount = album.items_count || albumDetail?.items?.length || 0;
 
   return (
@@ -28,13 +38,23 @@ const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: Lang; 
       className="group relative rounded-2xl overflow-hidden aspect-[4/3] hover-lift text-left shadow-water w-full"
     >
       {/* Full background image or gradient */}
-      {coverImg ? (
-        <img
-          src={coverImg}
-          alt={localizedField(album, 'title', lang)}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-          loading="lazy"
-        />
+      {coverImg || coverVideoUrl ? (
+        coverIsVideo && !coverImg ? (
+          <video
+            src={coverVideoUrl || undefined}
+            muted
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <img
+            src={coverImg || coverVideoUrl || undefined}
+            alt={localizedField(album, 'title', lang)}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            loading="lazy"
+          />
+        )
       ) : (
         <div className="absolute inset-0 gradient-ocean flex items-center justify-center">
           <Droplets size={56} className="text-white/25" />
@@ -50,6 +70,12 @@ const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: Lang; 
         {photoCount}
       </div>
 
+      {coverIsVideo && (
+        <div className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md">
+          <Play size={16} className="ml-0.5" />
+        </div>
+      )}
+
       {/* Title */}
       <div className="absolute bottom-0 left-0 right-0 p-5">
         <h3 className="font-display text-lg text-white font-bold leading-snug drop-shadow-md">
@@ -63,7 +89,7 @@ const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: Lang; 
 const GalleryPage = () => {
   const { lang } = useLang();
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
-  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [lightboxItem, setLightboxItem] = useState<{ url: string; title: string; mediaType: 'image' | 'video' } | null>(null);
 
   const { data: albumsData, isLoading } = useQuery({ queryKey: ['albums'], queryFn: () => api.getAlbums(), staleTime: 5 * 60 * 1000 });
   const albums = Array.isArray(albumsData) ? albumsData : albumsData?.items || [];
@@ -139,17 +165,38 @@ const GalleryPage = () => {
                     animate={{ opacity: 1 }}
                     className="break-inside-avoid"
                   >
+                    {(() => {
+                      const previewUrl = getPreviewUrl(item);
+                      const mediaUrl = getMediaUrl(item);
+                      const isVideo = item.file_type === 'video';
+                      if (!mediaUrl) return null;
+
+                      return (
                     <button
-                      onClick={() => item.file_type !== 'video' && setLightboxUrl(item.file_url || item.url || item.image_url)}
+                      onClick={() => setLightboxItem({
+                        url: mediaUrl,
+                        title: localizedField(albumDetail || {}, 'title', lang),
+                        mediaType: isVideo ? 'video' : 'image',
+                      })}
                       className="group relative rounded-2xl overflow-hidden w-full block hover-lift shadow-sm border border-border"
                     >
-                      <img
-                        src={item.thumbnail_url || item.file_url || item.url || item.image_url}
-                        alt=""
-                        className="w-full rounded-2xl group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      {item.file_type === 'video' && (
+                      {isVideo && !previewUrl ? (
+                        <video
+                          src={mediaUrl}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          className="w-full rounded-2xl group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <img
+                          src={previewUrl || mediaUrl}
+                          alt=""
+                          className="w-full rounded-2xl group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                      )}
+                      {isVideo && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-2xl">
                           <div className="w-14 h-14 rounded-full bg-white shadow-water flex items-center justify-center">
                             <Play size={22} className="text-primary ml-0.5" />
@@ -157,6 +204,8 @@ const GalleryPage = () => {
                         </div>
                       )}
                     </button>
+                      );
+                    })()}
                   </motion.div>
                 ))}
               </div>
@@ -165,31 +214,14 @@ const GalleryPage = () => {
         </div>
       </section>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {lightboxUrl && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4"
-            onClick={() => setLightboxUrl(null)}
-          >
-            <button className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors" onClick={() => setLightboxUrl(null)}>
-              <X size={24} />
-            </button>
-            <motion.img
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              src={lightboxUrl}
-              alt=""
-              className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl"
-              onClick={e => e.stopPropagation()}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <MediaLightbox
+        open={!!lightboxItem}
+        imageUrl={lightboxItem?.url}
+        downloadUrl={lightboxItem?.url}
+        mediaType={lightboxItem?.mediaType}
+        title={lightboxItem?.title}
+        onClose={() => setLightboxItem(null)}
+      />
     </div>
   );
 };

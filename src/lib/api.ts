@@ -5,6 +5,7 @@ import {
   Album,
   Certificate,
   ContactFormData,
+  InstagramVideo,
   SiteSettings,
 } from '@/types';
 
@@ -23,12 +24,13 @@ async function fetchAPI<T = unknown>(endpoint: string, options?: RequestInit): P
 
 export const api = {
   getSettings: () => fetchAPI<SiteSettings>('/settings/public'),
-  getProducts: (params?: { page?: number; per_page?: number; category_id?: string; is_on_sale?: boolean }) => {
+  getProducts: (params?: { page?: number; per_page?: number; category_id?: string; is_on_sale?: boolean; search?: string }) => {
     const sp = new URLSearchParams();
     if (params?.page) sp.set('page', String(params.page));
     if (params?.per_page) sp.set('per_page', String(params.per_page));
     if (params?.category_id) sp.set('category_id', params.category_id);
     if (params?.is_on_sale) sp.set('is_on_sale', 'true');
+    if (params?.search?.trim()) sp.set('search', params.search.trim());
     return fetchAPI<PaginatedResponse<Product>>(`/products?${sp.toString()}`);
   },
   getFeaturedProducts: () => fetchAPI<PaginatedResponse<Product>>('/products/featured'),
@@ -40,7 +42,7 @@ export const api = {
     return fetchAPI<Album[] | PaginatedResponse<Album>>(`/gallery/albums${sp}`);
   },
   getAlbum: (id: string) => fetchAPI<Album>(`/gallery/albums/${id}`),
-  getInstagramPosts: () => fetchAPI<unknown>('/instagram/posts'),
+  getInstagramPosts: () => fetchAPI<InstagramVideo[]>('/instagram/posts'),
   submitContact: (data: ContactFormData) =>
     fetchAPI<unknown>('/contacts', { method: 'POST', body: JSON.stringify(data) }),
   chat: (message: string, session_id: string) =>

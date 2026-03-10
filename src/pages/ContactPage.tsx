@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Phone, Mail, MapPin, Clock, CheckCircle, Send } from 'lucide-react';
+import { Phone, Mail, Clock, CheckCircle, Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -50,9 +50,9 @@ const ContactPage = () => {
   ].filter(i => i.label);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       {/* Hero */}
-      <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-36 pb-20">
+      <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-32 pb-14 sm:pt-36 sm:pb-20">
         <div className="absolute w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] -bottom-20 -left-20 pointer-events-none" />
         <div className="relative z-10 text-center container mx-auto px-4">
           <motion.span
@@ -66,27 +66,27 @@ const ContactPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight"
           >
             {t('contact_title', lang)}
           </motion.h1>
         </div>
       </section>
 
-      <section className="py-24 gradient-section">
+      <section className="py-16 sm:py-24 gradient-section overflow-x-hidden">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-5 gap-12">
+          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
             {/* Form */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-3 gradient-card hover-glow rounded-[2rem] p-8 md:p-12 border border-border shadow-water relative group overflow-hidden"
+              className="min-w-0 lg:col-span-3 gradient-card hover-glow rounded-[1.75rem] sm:rounded-[2rem] p-4 sm:p-6 md:p-10 border border-border shadow-water relative group overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               <div className="relative z-10">
                 {sent ? (
-                  <div className="text-center py-16">
-                    <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 shadow-sm border border-emerald-500/20">
+                  <div className="text-center py-10 sm:py-16">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 shadow-sm border border-emerald-500/20">
                       <CheckCircle size={32} className="text-emerald-500" />
                     </div>
                     <h3 className="font-display text-2xl font-black text-foreground mb-3">{t('contact_success', lang)}</h3>
@@ -95,16 +95,16 @@ const ContactPage = () => {
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={e => { e.preventDefault(); mutation.mutate(); }} className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <form onSubmit={e => { e.preventDefault(); mutation.mutate(); }} className="space-y-5 sm:space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       {[
                         { key: 'name', type: 'text', required: true },
                         { key: 'phone', type: 'tel', required: true },
                         { key: 'email', type: 'email' },
                         { key: 'subject', type: 'text' },
                       ].map(f => (
-                        <div key={f.key}>
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2.5 block">
+                        <div key={f.key} className="min-w-0">
+                          <label className="text-[11px] sm:text-xs font-black uppercase tracking-[0.18em] sm:tracking-widest text-muted-foreground mb-2 block">
                             {t(`contact_${f.key}`, lang)}{f.required ? ' *' : ''}
                           </label>
                           <input
@@ -112,13 +112,13 @@ const ContactPage = () => {
                             value={form[f.key as keyof ContactFormData]}
                             onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                             required={f.required}
-                            className="w-full px-5 py-4 rounded-2xl bg-muted/50 dark:bg-muted border border-border text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-background transition-all"
+                            className="w-full min-w-0 px-4 sm:px-5 py-3.5 sm:py-4 rounded-2xl bg-muted/50 dark:bg-muted border border-border text-base text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-background transition-all"
                           />
                         </div>
                       ))}
                     </div>
-                    <div>
-                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2.5 block">
+                    <div className="min-w-0">
+                      <label className="text-[11px] sm:text-xs font-black uppercase tracking-[0.18em] sm:tracking-widest text-muted-foreground mb-2 block">
                         {t('contact_message', lang)} *
                       </label>
                       <textarea
@@ -128,13 +128,13 @@ const ContactPage = () => {
                         minLength={10}
                         maxLength={2000}
                         rows={5}
-                        className="w-full px-5 py-4 rounded-2xl bg-muted/50 dark:bg-muted border border-border text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-background transition-all resize-none"
+                        className="w-full min-w-0 px-4 sm:px-5 py-3.5 sm:py-4 rounded-2xl bg-muted/50 dark:bg-muted border border-border text-base text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-background transition-all resize-none"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={mutation.isPending}
-                      className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold hover:-translate-y-0.5 hover:shadow-water-lg transition-all disabled:opacity-50 flex items-center justify-center gap-3 text-base mt-2"
+                      className="w-full py-3.5 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-bold hover:-translate-y-0.5 hover:shadow-water-lg transition-all disabled:opacity-50 flex items-center justify-center gap-3 text-base mt-2"
                     >
                       {mutation.isPending ? '...' : (
                         <>
@@ -153,21 +153,21 @@ const ContactPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="lg:col-span-2 space-y-5"
+              className="min-w-0 lg:col-span-2 space-y-4 sm:space-y-5"
             >
               {infos.map((info, i) => (
-                <div key={i} className="p-6 rounded-[1.5rem] gradient-card border border-border shadow-sm hover-lift group relative overflow-hidden">
+                <div key={i} className="min-w-0 p-4 sm:p-6 rounded-[1.5rem] gradient-card border border-border shadow-sm hover-lift group relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                   <div className="flex items-start gap-4 relative z-10">
                     <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
                       <info.icon size={20} className="text-primary" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1.5">{info.title}</h4>
                       {info.href ? (
-                        <a href={info.href} className="text-base text-foreground font-bold hover:text-primary transition-colors">{info.label}</a>
+                        <a href={info.href} className="block break-words text-base leading-relaxed text-foreground font-bold hover:text-primary transition-colors">{info.label}</a>
                       ) : (
-                        <p className="text-base text-foreground font-bold">{info.label}</p>
+                        <p className="break-words text-base leading-relaxed text-foreground font-bold">{info.label}</p>
                       )}
                     </div>
                   </div>
@@ -175,7 +175,7 @@ const ContactPage = () => {
               ))}
 
               {mapUrl && (
-                <div className="rounded-[1.5rem] overflow-hidden border border-border shadow-sm h-64 mt-4 bg-muted">
+                <div className="rounded-[1.5rem] overflow-hidden border border-border shadow-sm h-56 sm:h-64 mt-4 bg-muted">
                   <iframe
                     src={mapUrl}
                     className="w-full h-full border-0 dark:grayscale-[0.2] dark:invert-[1] dark:contrast-[0.8] dark:hue-rotate-180 transition-all duration-700"

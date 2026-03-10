@@ -18,18 +18,20 @@ const ProductsPage = () => {
 
   const { data: categories } = useQuery<Category[]>({ queryKey: ['categories'], queryFn: api.getCategories, staleTime: 5 * 60 * 1000 });
   const { data: products, isLoading } = useQuery<PaginatedResponse<Product>>({
-    queryKey: ['products', page, categoryId, saleOnly],
-    queryFn: () => api.getProducts({ page, per_page: 12, category_id: categoryId, is_on_sale: saleOnly || undefined }),
+    queryKey: ['products', page, categoryId, saleOnly, search],
+    queryFn: () => api.getProducts({
+      page,
+      per_page: 12,
+      category_id: categoryId,
+      is_on_sale: saleOnly || undefined,
+      search: search || undefined,
+    }),
     staleTime: 5 * 60 * 1000,
   });
 
   const items = products?.items || [];
   const totalPages = products?.total_pages || products?.pages || 1;
   const cats = categories || [];
-
-  const filtered = search
-    ? items.filter((p) => localizedField(p, 'name', lang).toLowerCase().includes(search.toLowerCase()))
-    : items;
 
   return (
     <div className="pt-36 pb-20 min-h-screen bg-background gradient-mesh relative overflow-hidden">
@@ -64,7 +66,10 @@ const ProductsPage = () => {
               <input
                 type="text"
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={e => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
                 placeholder={t('search', lang)}
                 className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-muted border border-border text-foreground font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-inner"
               />
@@ -110,8 +115,8 @@ const ProductsPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
           {isLoading
             ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-            : filtered.length > 0
-              ? filtered.map((p: any, i: number) => <ProductCard key={p.id} product={p} index={i} />)
+            : items.length > 0
+              ? items.map((p: any, i: number) => <ProductCard key={p.id} product={p} index={i} />)
               : (
                 <div className="col-span-full text-center py-32 glass rounded-[3rem]">
                   <div className="w-20 h-20 mx-auto rounded-3xl bg-muted/50 flex items-center justify-center mb-6 shadow-sm border border-border">

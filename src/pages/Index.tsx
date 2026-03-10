@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, ImageIcon, Droplets, MapPin, Shield, Zap, Award, ShieldCheck, FileText, ChevronDown } from 'lucide-react';
+import { ArrowRight, ImageIcon, Droplets, MapPin, Shield, Zap, Award, ShieldCheck, ChevronDown, ExternalLink, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -12,7 +12,8 @@ import { useCountUp } from '@/hooks/useCountUp';
 import WaveDivider from '@/components/layout/WaveDivider';
 import ProductCard from '@/components/ui/ProductCard';
 import SkeletonCard from '@/components/ui/SkeletonCard';
-import { Product, Album, Certificate, PaginatedResponse } from '@/types';
+import MediaLightbox from '@/components/ui/MediaLightbox';
+import { Product, Album, Certificate, InstagramVideo, PaginatedResponse } from '@/types';
 
 
 /* ── About Preview / Hero ── */
@@ -76,7 +77,7 @@ const AboutPreview = () => {
               transition={{ delay: 0.35 }}
               className="text-lg text-muted-foreground mb-8 max-w-lg leading-relaxed font-body"
             >
-              {localizedField(settings, 'hero_subtitle', lang) || t('hero_subtitle', lang)}
+              {localizedField(settings, 'hero_subtitle', lang) || String(settings.hero_desc_uz || '') || t('hero_subtitle', lang)}
             </motion.p>
 
             <motion.div
@@ -171,11 +172,20 @@ const StatCard = ({ value, suffix, label, delay, icon: Icon }: { value: number; 
 const StatsSection = () => {
   const { lang } = useLang();
   const s = useSettings();
+  const statValue = (currentKey: string, legacyKey: string, fallback: number) => {
+    const value = s[currentKey] ?? s[legacyKey];
+    if (typeof value === 'number' && Number.isFinite(value) && value > 0) return value;
+    if (typeof value === 'string') {
+      const parsed = parseInt(value.replace(/[^\d]/g, ''), 10);
+      if (Number.isFinite(parsed) && parsed > 0) return parsed;
+    }
+    return fallback;
+  };
   const stats = [
-    { value: Number(s.stats_years) || 10, suffix: '+', label: t('stats_years', lang), icon: Award },
-    { value: Number(s.stats_clients) || 5000, suffix: '+', label: t('stats_clients', lang), icon: Droplets },
-    { value: Number(s.stats_products) || 20, suffix: '+', label: t('stats_products', lang), icon: Shield },
-    { value: Number(s.stats_cities) || 15, suffix: '+', label: t('stats_cities', lang), icon: Zap },
+    { value: statValue('stats_years', 'stat_years', 10), suffix: '+', label: t('stats_years', lang), icon: Award },
+    { value: statValue('stats_clients', 'stat_clients', 5000), suffix: '+', label: t('stats_clients', lang), icon: Droplets },
+    { value: statValue('stats_products', 'stat_products', 20), suffix: '+', label: t('stats_products', lang), icon: Shield },
+    { value: statValue('stats_cities', 'stat_cities', 15), suffix: '+', label: t('stats_cities', lang), icon: Zap },
   ];
   return (
     <section className="py-14 gradient-mesh bg-background relative">
@@ -395,9 +405,103 @@ const GalleryCarousel = () => {
   );
 };
 
+/* ── Instagram Videos ── */
+const InstagramVideosSection = () => {
+  const { lang } = useLang();
+  const settings = useSettings();
+  const { data: videos } = useQuery<InstagramVideo[]>({
+    queryKey: ['instagram-videos'],
+    queryFn: api.getInstagramPosts,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  if (!videos?.length) return null;
+
+  return (
+    <section className="py-16 bg-card relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-6 mb-12 text-center md:text-left">
+          <div>
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-primary mb-3 justify-center md:justify-start"
+            >
+              <PlayCircle size={14} /> {t('instagram_title', lang)}
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight"
+            >
+              Instagram Reels
+            </motion.h2>
+          </div>
+          {settings.instagram_url && (
+            <a
+              href={String(settings.instagram_url)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group px-6 py-3 rounded-xl glass text-foreground font-bold flex items-center gap-2 text-sm shadow-sm"
+            >
+              Instagram sahifasi <ExternalLink size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
+            </a>
+          )}
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {videos.slice(0, 6).map((video, index) => (
+            <motion.div
+              key={video.id}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.08, duration: 0.5 }}
+              className="rounded-[2rem] overflow-hidden border border-border bg-background shadow-sm hover-lift"
+            >
+              <div className="aspect-[9/16] bg-muted">
+                <iframe
+                  src={video.embed_url}
+                  title={`Instagram ${video.id}`}
+                  className="h-full w-full border-0"
+                  loading="lazy"
+                  allowFullScreen
+                />
+              </div>
+              <div className="flex items-center justify-between gap-3 p-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+                    Instagram
+                  </p>
+                  <p className="text-sm font-semibold text-muted-foreground">
+                    {video.kind === 'reel' ? 'Reel video' : 'Post video'}
+                  </p>
+                </div>
+                <a
+                  href={video.permalink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-bold text-foreground hover:text-primary"
+                >
+                  Ochish <ExternalLink size={14} />
+                </a>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 /* ── Certificates Section ── */
 const CertificatesCarousel = () => {
   const { lang } = useLang();
+  const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
   const { data } = useQuery<Certificate[] | PaginatedResponse<Certificate>>({ queryKey: ['certificates'], queryFn: api.getCertificates, staleTime: 5 * 60 * 1000 });
   const certs = Array.isArray(data) ? data : data?.items || [];
 
@@ -441,30 +545,31 @@ const CertificatesCarousel = () => {
               viewport={{ once: true }}
               transition={{ delay: i * 0.08, duration: 0.5 }}
             >
-              <Link to={cert.file_url || "/certificates"} target={cert.file_url ? "_blank" : undefined} rel="noopener noreferrer" className="block group">
+              <button type="button" onClick={() => setSelectedCertificate(cert)} className="block w-full text-left group">
                 <div className="rounded-[1.5rem] overflow-hidden bg-background border border-border shadow-sm hover-lift p-2">
                   <div className="aspect-[3/4] rounded-[1.2rem] overflow-hidden bg-muted/50 relative group/img">
-                    {(cert.preview_url || cert.image_url) || cert.file_type !== 'pdf' ? (
-                      <img
-                        src={cert.preview_url || cert.image_url || cert.file_url}
-                        alt={localizedField(cert, 'title', lang)}
-                        className="w-full h-full object-contain p-2 bg-white dark:bg-card group-hover/img:scale-105 transition-transform duration-700"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center p-2 bg-white dark:bg-card group-hover/img:scale-105 transition-transform duration-700 text-muted-foreground">
-                        <FileText size={48} className="mb-2 opacity-50" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">PDF</span>
-                      </div>
-                    )}
+                    <img
+                      src={cert.preview_url || cert.image_url || cert.file_url}
+                      alt={localizedField(cert, 'title', lang)}
+                      className="w-full h-full object-contain p-2 bg-white dark:bg-card group-hover/img:scale-105 transition-transform duration-700"
+                      loading="lazy"
+                    />
                   </div>
                   <p className="text-xs font-bold text-center text-muted-foreground mt-3 mb-1 line-clamp-1 px-1">{localizedField(cert, 'title', lang)}</p>
                 </div>
-              </Link>
+              </button>
             </motion.div>
           ))}
         </div>
       </div>
+
+      <MediaLightbox
+        open={!!selectedCertificate}
+        imageUrl={selectedCertificate?.preview_url || selectedCertificate?.image_url || selectedCertificate?.file_url}
+        downloadUrl={selectedCertificate?.file_url}
+        title={selectedCertificate ? localizedField(selectedCertificate, 'title', lang) : ''}
+        onClose={() => setSelectedCertificate(null)}
+      />
     </section>
   );
 };
@@ -477,6 +582,7 @@ const HomePage = () => (
     <ProductsCarousel />
     <StatsSection />
     <GalleryCarousel />
+    <InstagramVideosSection />
   </>
 );
 

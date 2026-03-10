@@ -32,14 +32,14 @@ const Navbar = () => {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => setMobileOpen(false), [location]);
 
-  const isHome = location.pathname === '/';
-  const showSolid = scrolled || !isHome;
+  const showSolid = scrolled;
 
   return (
     <>

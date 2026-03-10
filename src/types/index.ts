@@ -16,6 +16,9 @@ export interface Product {
     name_uz: string;
     name_ru: string;
     name_en: string;
+    desc_uz?: string;
+    desc_ru?: string;
+    desc_en?: string;
     description_uz?: string;
     description_ru?: string;
     description_en?: string;
@@ -76,6 +79,15 @@ export interface Certificate {
     issued_by?: string;
 }
 
+export interface InstagramVideo {
+    id: string;
+    url: string;
+    permalink: string;
+    embed_url: string;
+    media_type: 'VIDEO';
+    kind: 'reel' | 'p' | 'tv' | string;
+}
+
 /* ── Contact ── */
 export interface ContactFormData {
     name: string;
@@ -104,9 +116,25 @@ export interface SiteSettings {
     about_text_uz?: string;
     about_text_ru?: string;
     about_text_en?: string;
+    about_page_title_uz?: string;
+    about_page_title_ru?: string;
+    about_page_title_en?: string;
+    about_section_badge_uz?: string;
+    about_section_badge_ru?: string;
+    about_section_badge_en?: string;
+    about_section_title_uz?: string;
+    about_section_title_ru?: string;
+    about_section_title_en?: string;
+    about_values_badge_uz?: string;
+    about_values_badge_ru?: string;
+    about_values_badge_en?: string;
+    about_values_title_uz?: string;
+    about_values_title_ru?: string;
+    about_values_title_en?: string;
     hero_title_uz?: string;
     hero_title_ru?: string;
     hero_title_en?: string;
+    hero_badge?: string;
     hero_subtitle_uz?: string;
     hero_subtitle_ru?: string;
     hero_subtitle_en?: string;

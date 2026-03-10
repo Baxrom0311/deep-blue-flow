@@ -36,7 +36,7 @@ const ChatWidget = () => {
     onMutate: () => setTyping(true),
     onSuccess: (data: any) => {
       setTyping(false);
-      const reply = data?.response || data?.message || data?.answer || "Kechirasiz, qayta urinib ko'ring.";
+      const reply = data?.reply || data?.response || data?.message || data?.answer || "Kechirasiz, qayta urinib ko'ring.";
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     },
     onError: () => {

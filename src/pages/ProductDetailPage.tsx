@@ -49,7 +49,7 @@ const ProductDetailPage = () => {
   if (!product) return null;
 
   const name = localizedField(product, 'name', lang);
-  const desc = localizedField(product, 'description', lang);
+  const desc = localizedField(product, 'desc', lang) || localizedField(product, 'description', lang);
   const images = product.images?.length ? product.images : (product.image_url ? [product.image_url] : []);
   const isDiscount = product.is_on_sale && product.is_discount_active;
   const relatedItems = related?.items || [];
