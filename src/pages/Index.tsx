@@ -17,13 +17,50 @@ import SEO from '@/components/SEO';
 import { buildOrganizationSchema, buildWebsiteSchema, sanitizeDescription } from '@/lib/seo';
 import { Product, Album, Certificate, InstagramVideo, PaginatedResponse } from '@/types';
 
+const LEGACY_PARTNER_LOGOS = [
+  '/media/partners/NGMK.jpg',
+  '/media/partners/MININNOVATION.jpg',
+  '/media/partners/UZAVTO.jpg',
+  '/media/partners/ONA.jpg',
+  '/media/partners/ICHF.jpg',
+  '/media/partners/NBU.jpg',
+  '/media/partners/URSU.jpg',
+];
+
+const isLegacyPartnerLogoList = (value: string[]) =>
+  value.length === LEGACY_PARTNER_LOGOS.length
+  && value.every((item, index) => item === LEGACY_PARTNER_LOGOS[index]);
+
+const parseImageListSetting = (value: unknown, fallback: string[] = []) => {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+  }
+  if (typeof value !== 'string' || !value.trim()) return fallback;
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+    }
+  } catch {
+    return fallback;
+  }
+
+  return fallback;
+};
+
+const getPartnerAlt = (url: string, index: number) => {
+  const fileName = url.split('/').pop()?.replace(/\.[^.]+$/, '') || `partner-${index + 1}`;
+  return decodeURIComponent(fileName).replace(/[-_]+/g, ' ');
+};
+
 
 /* ── About Preview / Hero ── */
 const AboutPreview = () => {
   const { lang } = useLang();
   const settings = useSettings();
   return (
-    <section className="relative overflow-hidden gradient-hero" style={{ minHeight: '80vh' }}>
+    <section className="relative overflow-hidden bg-transparent" style={{ minHeight: '80vh' }}>
       {/* Animated gradient orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute w-[700px] h-[700px] rounded-full bg-primary/8 dark:bg-primary/5 blur-[150px] -top-40 -left-40" style={{ animation: 'float 12s ease-in-out infinite' }} />
@@ -113,7 +150,7 @@ const AboutPreview = () => {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-water-lg">
               <img
-                src="/images/about.jpg"
+                src={String(settings.hero_image_url || '/images/about.jpg')}
                 alt="ECO COMPANY"
                 className="w-full h-full object-cover"
               />
@@ -190,7 +227,7 @@ const StatsSection = () => {
     { value: statValue('stats_cities', 'stat_cities', 15), suffix: '+', label: t('stats_cities', lang), icon: Zap },
   ];
   return (
-    <section className="py-14 gradient-mesh bg-background relative">
+    <section className="py-14 relative">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
           {stats.map((s, i) => <StatCard key={i} {...s} delay={i * 0.15} />)}
@@ -210,7 +247,7 @@ const ProductsCarousel = () => {
   const items = Array.isArray(products) ? products : products?.items || [];
 
   if (isLoading) return (
-    <section className="py-16 bg-card relative overflow-hidden">
+    <section className="py-16 bg-transparent relative overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
@@ -222,7 +259,7 @@ const ProductsCarousel = () => {
   if (items.length === 0) return null;
 
   return (
-    <section className="py-16 bg-card relative overflow-hidden">
+    <section className="py-16 bg-transparent relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
       <div className="container mx-auto px-4 mb-12">
@@ -348,7 +385,7 @@ const GalleryCarousel = () => {
   if (albums.length === 0) return null;
 
   return (
-    <section className="py-16 gradient-section relative overflow-hidden">
+    <section className="py-16 bg-transparent relative overflow-hidden">
       <div className="container mx-auto px-4 mb-12">
         <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-6 text-center md:text-left">
           <div>
@@ -420,7 +457,7 @@ const InstagramVideosSection = () => {
   if (!videos?.length) return null;
 
   return (
-    <section className="py-16 bg-card relative overflow-hidden">
+    <section className="py-16 bg-transparent relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
       <div className="container mx-auto px-4">
@@ -510,7 +547,7 @@ const CertificatesCarousel = () => {
   if (certs.length === 0) return null;
 
   return (
-    <section className="py-16 bg-card relative overflow-hidden">
+    <section className="py-16 bg-transparent relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
       <div className="container mx-auto px-4">
@@ -576,6 +613,73 @@ const CertificatesCarousel = () => {
   );
 };
 
+const PartnersSection = () => {
+  const { lang } = useLang();
+  const settings = useSettings();
+  const rawLogos = parseImageListSetting(settings.partner_logos, []);
+  const logos = isLegacyPartnerLogoList(rawLogos) ? [] : rawLogos;
+
+  if (!logos.length) return null;
+
+  const CARD_W = 156;
+  const GAP = 20;
+  const SLOT = CARD_W + GAP;
+  const repeatCount = Math.max(3, Math.ceil(2200 / Math.max(logos.length * SLOT, SLOT)));
+  const oneSet = Array.from({ length: repeatCount }, () => logos).flat();
+  const setWidth = oneSet.length * SLOT;
+  const allItems = [...oneSet, ...oneSet];
+
+  return (
+    <section className="py-14 bg-transparent relative overflow-hidden">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-8">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-xs font-black uppercase tracking-[0.25em] text-gradient-water mb-3 block"
+          >
+            ECO COMPANY
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight"
+          >
+            {t('partners_title', lang)}
+          </motion.h2>
+        </div>
+
+        <div className="overflow-hidden rounded-[2rem] border border-border bg-card/65 px-4 py-5 shadow-sm backdrop-blur-sm">
+          <div
+            className="flex gap-5"
+            style={{
+              width: `${setWidth * 2}px`,
+              animation: `marquee-dynamic ${Math.max(oneSet.length * 2.6, 18)}s linear infinite`,
+              "--marquee-width": `-${setWidth}px`,
+            } as React.CSSProperties}
+          >
+            {allItems.map((logo, index) => (
+              <div
+                key={`${logo}-${index}`}
+                className="flex h-24 w-[156px] shrink-0 items-center justify-center rounded-[1.5rem] border border-border bg-background/85 px-5 py-4 shadow-sm"
+              >
+                <img
+                  src={logo}
+                  alt={getPartnerAlt(logo, index)}
+                  className="max-h-full max-w-full object-contain grayscale-[0.05]"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 /* ── Home ── */
 const HomePage = () => {
   const { lang } = useLang();
@@ -586,7 +690,7 @@ const HomePage = () => {
   );
 
   return (
-    <>
+    <div className="gradient-home-flow">
       <SEO
         title={title}
         description={description}
@@ -603,7 +707,8 @@ const HomePage = () => {
       <StatsSection />
       <GalleryCarousel />
       <InstagramVideosSection />
-    </>
+      <PartnersSection />
+    </div>
   );
 };
 

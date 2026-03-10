@@ -138,6 +138,8 @@ export interface SiteSettings {
     hero_subtitle_uz?: string;
     hero_subtitle_ru?: string;
     hero_subtitle_en?: string;
+    hero_image_url?: string;
+    partner_logos?: string[] | string;
     stats_years?: string | number;
     stats_clients?: string | number;
     stats_products?: string | number;

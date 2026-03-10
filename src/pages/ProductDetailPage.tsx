@@ -190,7 +190,7 @@ const ProductDetailPage = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-100">
               <a
-                href={settings.whatsapp_url || `https://wa.me/${(settings.phone_1 || '').replace(/\D/g, '')}`}
+                href={String(settings.telegram_url || 'https://t.me/ecocompany')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold flex items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-water-lg transition-all text-lg"
@@ -206,8 +206,24 @@ const ProductDetailPage = () => {
               </button>
             </div>
 
-            <div className="mt-8 flex items-center gap-4 text-sm font-bold text-slate-400 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-              <Phone size={18} className="text-primary" /> {t('questions_call', lang) || "Savollar bo'lsa telefon qiling"}: <span className="text-slate-700">{settings.phone_1}</span>
+            <div className="mt-8 flex flex-col gap-2 text-sm font-bold text-slate-400 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+              <div className="flex flex-wrap items-center gap-3">
+                <Phone size={18} className="text-primary shrink-0" />
+                <span>{t('questions_call', lang)}:</span>
+                <span className="text-slate-700">{settings.phone_1}</span>
+              </div>
+              {settings.telegram_url && (
+                <div className="pl-8">
+                  <a
+                    href={settings.telegram_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary/80 transition-colors"
+                  >
+                    Telegram
+                  </a>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>

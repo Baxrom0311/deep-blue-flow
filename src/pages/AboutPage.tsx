@@ -61,13 +61,14 @@ const AboutPage = () => {
   const aboutSectionText = localizedField(s, 'about_text', lang) || "ECO COMPANY — O'zbekistondagi yetakchi tozalangan suv ishlab chiqaruvchi kompaniya. Biz zamonaviy texnologiyalar yordamida eng sifatli ichimlik suvini taqdim etamiz.";
   const valuesBadge = localizedField(s, 'about_values_badge', lang) || (lang === 'uz' ? "Nima uchun biz?" : lang === 'ru' ? "Почему мы?" : "Why us?");
   const valuesTitle = localizedField(s, 'about_values_title', lang) || (lang === 'uz' ? "Bizning qadriyatlar" : lang === 'ru' ? "Наши ценности" : "Our Values");
+  const heroImage = String(s.hero_image_url || '/images/about.jpg');
 
   return (
     <div className="min-h-screen overflow-x-hidden">
       <SEO
         title={`${aboutPageTitle} | ECO COMPANY`}
         description={sanitizeDescription(aboutSectionText)}
-        image="/images/about.jpg"
+        image={heroImage}
         lang={lang}
         canonicalPath="/about"
         structuredData={buildBreadcrumbSchema([
@@ -114,7 +115,7 @@ const AboutPage = () => {
             >
               <div className="relative rounded-[2rem] overflow-hidden shadow-water-lg border border-border">
                 <img
-                  src="/images/about.jpg"
+                  src={heroImage}
                   alt="ECO COMPANY"
                   className="w-full h-[320px] sm:h-[400px] lg:h-[500px] object-cover"
                 />

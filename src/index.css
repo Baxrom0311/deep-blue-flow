@@ -151,6 +151,30 @@
       radial-gradient(ellipse at 50% 50%, hsl(222 47% 6%), hsl(222 47% 6%));
   }
 
+  .gradient-home-flow {
+    background:
+      radial-gradient(ellipse at top center, hsl(199 89% 48% / 0.18), transparent 45%),
+      radial-gradient(ellipse at 80% 18%, hsl(172 66% 50% / 0.12), transparent 36%),
+      radial-gradient(ellipse at 12% 34%, hsl(190 90% 50% / 0.08), transparent 34%),
+      linear-gradient(180deg,
+        hsl(204 42% 96%) 0%,
+        hsl(198 46% 95%) 26%,
+        hsl(192 42% 94%) 52%,
+        hsl(var(--background)) 100%);
+  }
+
+  .dark .gradient-home-flow {
+    background:
+      radial-gradient(ellipse at top center, hsl(199 89% 55% / 0.08), transparent 42%),
+      radial-gradient(ellipse at 80% 18%, hsl(172 66% 45% / 0.05), transparent 34%),
+      radial-gradient(ellipse at 12% 34%, hsl(190 85% 50% / 0.04), transparent 34%),
+      linear-gradient(180deg,
+        hsl(222 40% 10%) 0%,
+        hsl(220 36% 9%) 28%,
+        hsl(218 34% 8%) 54%,
+        hsl(var(--background)) 100%);
+  }
+
   .gradient-subtle {
     background: linear-gradient(160deg, hsl(var(--background)), hsl(var(--water-foam)), hsl(var(--water-mist)));
   }
@@ -187,6 +211,24 @@
 
   .dark .gradient-section {
     background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(222 40% 8%) 50%, hsl(var(--background)) 100%);
+  }
+
+  .gradient-footer-mint {
+    background:
+      linear-gradient(180deg,
+        hsl(138 60% 96% / 0.92) 0%,
+        hsl(141 58% 92% / 0.95) 42%,
+        hsl(145 55% 84% / 0.98) 78%,
+        hsl(148 57% 74% / 1) 100%);
+  }
+
+  .dark .gradient-footer-mint {
+    background:
+      linear-gradient(180deg,
+        hsl(151 40% 16% / 0.92) 0%,
+        hsl(151 44% 20% / 0.94) 42%,
+        hsl(151 48% 24% / 0.96) 78%,
+        hsl(151 52% 28% / 0.98) 100%);
   }
 
   /* ── Text gradients ── */

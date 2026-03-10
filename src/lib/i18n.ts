@@ -24,6 +24,7 @@ const translations: Record<string, Record<Lang, string>> = {
   days_left: { uz: "kun qoldi", ru: "дней осталось", en: "days left" },
   order_btn: { uz: "Buyurtma berish", ru: "Заказать", en: "Order" },
   contact_title: { uz: "Biz bilan bog'laning", ru: "Свяжитесь с нами", en: "Contact Us" },
+  questions_call: { uz: "Biz bilan bog'lanish", ru: "Связаться с нами", en: "Contact us" },
   contact_name: { uz: "Ismingiz", ru: "Ваше имя", en: "Your name" },
   contact_email: { uz: "Elektron pochta", ru: "Эл. почта", en: "Email" },
   contact_phone: { uz: "Telefon", ru: "Телефон", en: "Phone" },
@@ -46,6 +47,7 @@ const translations: Record<string, Record<Lang, string>> = {
   about_title: { uz: "Kompaniya haqida", ru: "О компании", en: "About Company" },
   certificates_title: { uz: "Sertifikatlar", ru: "Сертификаты", en: "Certificates" },
   gallery_title: { uz: "Galereya", ru: "Галерея", en: "Gallery" },
+  partners_title: { uz: "Hamkorlar", ru: "Партнеры", en: "Partners" },
   all: { uz: "Barchasi", ru: "Все", en: "All" },
   breadcrumb_home: { uz: "Bosh sahifa", ru: "Главная", en: "Home" },
 };
