@@ -3,11 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { Play, ArrowLeft, Droplets, Image as ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { t, localizedField, Lang } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import MediaLightbox from '@/components/ui/MediaLightbox';
 import SEO from '@/components/SEO';
-import { buildBreadcrumbSchema, buildCollectionPageSchema, sanitizeDescription } from '@/lib/seo';
+import { buildBreadcrumbSchema, buildCollectionPageSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, pickPrimaryImage, sanitizeDescription } from '@/lib/seo';
 
 /* ── Album Card ── */
 import { Album, AlbumItem } from '@/types';
@@ -83,6 +84,7 @@ const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: Lang; 
 
 const GalleryPage = () => {
   const { lang } = useLang();
+  const settings = useSettings();
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [lightboxItem, setLightboxItem] = useState<{ url: string; title: string; mediaType: 'image' | 'video' } | null>(null);
 
@@ -99,12 +101,31 @@ const GalleryPage = () => {
   const selectedAlbumTitle = selectedAlbumId && albumDetail
     ? localizedField(albumDetail, 'title', lang)
     : t('gallery_title', lang);
+  const seoImage = pickPrimaryImage(
+    albumDetail?.items?.[0]?.thumbnail_url,
+    albumDetail?.items?.[0]?.file_url,
+    albums[0]?.cover_thumbnail_url,
+    albums[0]?.cover_url,
+    '/images/about.jpg',
+  );
+  const pageDescription = sanitizeDescription("ECO COMPANY galereyasi, o'rnatish jarayonlari va kompaniya faoliyatidan lavhalar.");
+  const galleryKeywords = mergeKeywords(
+    localizedField(settings, 'seo_keywords', lang),
+    localizedField(settings, 'seo_gallery_keywords', lang),
+    defaultSeoKeywords(lang),
+    t('gallery_title', lang),
+    selectedAlbumTitle,
+    albums.slice(0, 8).map((album) => localizedField(album, 'title', lang) || ''),
+    keywordPhrase('ECO COMPANY', lang === 'uz' ? 'galereya' : lang === 'ru' ? 'галерея' : 'gallery'),
+  );
 
   return (
     <div className="min-h-screen">
       <SEO
         title={`${selectedAlbumTitle} | ECO COMPANY`}
-        description={sanitizeDescription("ECO COMPANY galereyasi, o'rnatish jarayonlari va kompaniya faoliyatidan lavhalar.")}
+        description={pageDescription}
+        image={seoImage}
+        keywords={galleryKeywords}
         canonicalPath="/gallery"
         lang={lang}
         structuredData={[
@@ -114,11 +135,14 @@ const GalleryPage = () => {
           ]),
           buildCollectionPageSchema({
             name: `${t('gallery_title', lang)} | ECO COMPANY`,
-            description: sanitizeDescription("ECO COMPANY galereyasi, o'rnatish jarayonlari va kompaniya faoliyatidan lavhalar."),
+            description: pageDescription,
             path: '/gallery',
+            image: seoImage,
+            keywords: galleryKeywords,
             items: albums.map((album) => ({
               name: localizedField(album, 'title', lang) || 'Gallery album',
               path: '/gallery',
+              image: album.cover_thumbnail_url || album.cover_url || album.cover_image,
             })),
           }),
         ]}

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl, localeForLang, type Lang } from '@/lib/seo';
+import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl, imageMimeType, localeForLang, type Lang } from '@/lib/seo';
 
 type StructuredData = Record<string, unknown> | Array<Record<string, unknown>>;
 
@@ -8,6 +8,7 @@ interface SEOProps {
   title: string;
   description?: string;
   image?: string;
+  keywords?: string[] | string;
   type?: string;
   canonicalPath?: string;
   noindex?: boolean;
@@ -43,6 +44,7 @@ const SEO = ({
   title,
   description = DEFAULT_DESCRIPTION,
   image = DEFAULT_OG_IMAGE,
+  keywords,
   type = 'website',
   canonicalPath,
   noindex = false,
@@ -56,16 +58,26 @@ const SEO = ({
     const canonicalUrl = `${SITE_URL}${canonicalPath || location.pathname}`;
     const ogImage = absoluteUrl(image);
     const robots = noindex ? 'noindex, nofollow' : 'index, follow';
+    const keywordContent = Array.isArray(keywords)
+      ? keywords.filter(Boolean).join(', ')
+      : (typeof keywords === 'string' ? keywords.trim() : '');
     document.title = fullTitle;
     document.documentElement.lang = lang;
 
     upsertMeta('meta[name="description"]', { name: 'description', content: description });
     upsertMeta('meta[name="robots"]', { name: 'robots', content: robots });
+    if (keywordContent) {
+      upsertMeta('meta[name="keywords"]', { name: 'keywords', content: keywordContent });
+    } else {
+      document.head.querySelector('meta[name="keywords"]')?.remove();
+    }
     upsertMeta('meta[property="og:title"]', { property: 'og:title', content: fullTitle });
     upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
     upsertMeta('meta[property="og:type"]', { property: 'og:type', content: type });
     upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonicalUrl });
     upsertMeta('meta[property="og:image"]', { property: 'og:image', content: ogImage });
+    upsertMeta('meta[property="og:image:secure_url"]', { property: 'og:image:secure_url', content: ogImage });
+    upsertMeta('meta[property="og:image:type"]', { property: 'og:image:type', content: imageMimeType(ogImage) });
     upsertMeta('meta[property="og:image:alt"]', { property: 'og:image:alt', content: fullTitle });
     upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: SITE_NAME });
     upsertMeta('meta[property="og:locale"]', { property: 'og:locale', content: localeForLang(lang) });
@@ -91,7 +103,7 @@ const SEO = ({
       const script = document.head.querySelector('#seo-structured-data');
       if (script) script.remove();
     };
-  }, [canonicalPath, description, image, lang, location.pathname, noindex, structuredData, title, type]);
+  }, [canonicalPath, description, image, keywords, lang, location.pathname, noindex, structuredData, title, type]);
 
   return null;
 };

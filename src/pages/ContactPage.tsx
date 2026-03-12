@@ -8,7 +8,7 @@ import { t, localizedField } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { ContactFormData } from '@/types';
 import SEO from '@/components/SEO';
-import { buildBreadcrumbSchema, buildLocalBusinessSchema, sanitizeDescription } from '@/lib/seo';
+import { buildBreadcrumbSchema, buildLocalBusinessSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, pickPrimaryImage, sanitizeDescription } from '@/lib/seo';
 
 const ContactPage = () => {
   const { lang } = useLang();
@@ -55,12 +55,24 @@ const ContactPage = () => {
     `${localizedField(s, 'address', lang) || ''} ${s.phone_1 || ''} ${s.email || ''}`.trim()
       || "ECO COMPANY bilan bog'lanish uchun telefon, email va manzil ma'lumotlari.",
   );
+  const seoImage = pickPrimaryImage(s.hero_image_url as string | undefined, s.logo_url as string | undefined, '/images/about.jpg');
+  const contactKeywords = mergeKeywords(
+    localizedField(s, 'seo_keywords', lang),
+    localizedField(s, 'seo_contact_keywords', lang),
+    defaultSeoKeywords(lang),
+    t('contact_title', lang),
+    localizedField(s, 'address', lang),
+    s.phone_1 || '',
+    keywordPhrase('ECO COMPANY', lang === 'uz' ? "bog'lanish" : lang === 'ru' ? 'контакты' : 'contact'),
+  );
 
   return (
     <div className="min-h-screen overflow-x-hidden">
       <SEO
         title={`${t('contact_title', lang)} | ECO COMPANY`}
         description={contactDescription}
+        image={seoImage}
+        keywords={contactKeywords}
         canonicalPath="/contact"
         lang={lang}
         structuredData={[
@@ -68,7 +80,7 @@ const ContactPage = () => {
             { name: t('nav_home', lang), path: '/' },
             { name: t('nav_contact', lang), path: '/contact' },
           ]),
-          buildLocalBusinessSchema(s, lang),
+          buildLocalBusinessSchema(s, lang, contactKeywords),
         ]}
       />
       {/* Hero */}

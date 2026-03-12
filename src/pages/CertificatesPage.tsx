@@ -3,24 +3,38 @@ import { useQuery } from '@tanstack/react-query';
 import { Download, Eye, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { t, localizedField } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Certificate, PaginatedResponse } from '@/types';
 import MediaLightbox from '@/components/ui/MediaLightbox';
 import SEO from '@/components/SEO';
-import { buildBreadcrumbSchema, buildCollectionPageSchema, sanitizeDescription } from '@/lib/seo';
+import { buildBreadcrumbSchema, buildCollectionPageSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, pickPrimaryImage, sanitizeDescription } from '@/lib/seo';
 
 const CertificatesPage = () => {
   const { lang } = useLang();
+  const settings = useSettings();
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
   const { data, isLoading } = useQuery<Certificate[] | PaginatedResponse<Certificate>>({ queryKey: ['certificates'], queryFn: api.getCertificates, staleTime: 5 * 60 * 1000 });
   const certs = Array.isArray(data) ? data : (data?.items || []);
+  const seoImage = pickPrimaryImage(certs[0]?.preview_url, certs[0]?.image_url, certs[0]?.file_url, '/images/about.jpg');
+  const pageDescription = sanitizeDescription("ECO COMPANY sertifikatlari va sifatni tasdiqlovchi hujjatlar ro'yxati.");
+  const certificateKeywords = mergeKeywords(
+    localizedField(settings, 'seo_keywords', lang),
+    localizedField(settings, 'seo_certificates_keywords', lang),
+    defaultSeoKeywords(lang),
+    t('certificates_title', lang),
+    certs.slice(0, 8).map((cert) => localizedField(cert, 'title', lang) || ''),
+    keywordPhrase('ECO COMPANY', lang === 'uz' ? 'sertifikatlar' : lang === 'ru' ? 'сертификаты' : 'certificates'),
+  );
 
   return (
     <div className="min-h-screen">
       <SEO
         title={`${t('certificates_title', lang)} | ECO COMPANY`}
-        description={sanitizeDescription("ECO COMPANY sertifikatlari va sifatni tasdiqlovchi hujjatlar ro'yxati.")}
+        description={pageDescription}
+        image={seoImage}
+        keywords={certificateKeywords}
         canonicalPath="/certificates"
         lang={lang}
         structuredData={[
@@ -30,11 +44,14 @@ const CertificatesPage = () => {
           ]),
           buildCollectionPageSchema({
             name: `${t('certificates_title', lang)} | ECO COMPANY`,
-            description: sanitizeDescription("ECO COMPANY sertifikatlari va sifatni tasdiqlovchi hujjatlar ro'yxati."),
+            description: pageDescription,
             path: '/certificates',
+            image: seoImage,
+            keywords: certificateKeywords,
             items: certs.map((cert) => ({
               name: localizedField(cert, 'title', lang) || 'Certificate',
               path: '/certificates',
+              image: cert.preview_url || cert.image_url || cert.file_url,
             })),
           }),
         ]}

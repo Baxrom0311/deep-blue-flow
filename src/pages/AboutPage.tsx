@@ -4,7 +4,7 @@ import { t, localizedField, Lang } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 import { Droplets, Shield, Award, Truck, Clock, Heart } from 'lucide-react';
 import SEO from '@/components/SEO';
-import { buildBreadcrumbSchema, sanitizeDescription } from '@/lib/seo';
+import { buildBreadcrumbSchema, buildCollectionPageSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, sanitizeDescription } from '@/lib/seo';
 
 const values = [
   { icon: Droplets, key: 'purity' },
@@ -62,6 +62,15 @@ const AboutPage = () => {
   const valuesBadge = localizedField(s, 'about_values_badge', lang) || (lang === 'uz' ? "Nima uchun biz?" : lang === 'ru' ? "Почему мы?" : "Why us?");
   const valuesTitle = localizedField(s, 'about_values_title', lang) || (lang === 'uz' ? "Bizning qadriyatlar" : lang === 'ru' ? "Наши ценности" : "Our Values");
   const heroImage = String(s.hero_image_url || '/images/about.jpg');
+  const aboutKeywords = mergeKeywords(
+    localizedField(s, 'seo_keywords', lang),
+    localizedField(s, 'seo_about_keywords', lang),
+    defaultSeoKeywords(lang),
+    aboutPageTitle,
+    aboutSectionTitle,
+    valuesTitle,
+    keywordPhrase('ECO COMPANY', lang === 'uz' ? 'kompaniya haqida' : lang === 'ru' ? 'о компании' : 'about company'),
+  );
 
   return (
     <div className="min-h-screen overflow-x-hidden">
@@ -69,12 +78,27 @@ const AboutPage = () => {
         title={`${aboutPageTitle} | ECO COMPANY`}
         description={sanitizeDescription(aboutSectionText)}
         image={heroImage}
+        keywords={aboutKeywords}
         lang={lang}
         canonicalPath="/about"
-        structuredData={buildBreadcrumbSchema([
-          { name: t('nav_home', lang), path: '/' },
-          { name: t('nav_about', lang), path: '/about' },
-        ])}
+        structuredData={[
+          buildBreadcrumbSchema([
+            { name: t('nav_home', lang), path: '/' },
+            { name: t('nav_about', lang), path: '/about' },
+          ]),
+          buildCollectionPageSchema({
+            name: `${aboutPageTitle} | ECO COMPANY`,
+            description: sanitizeDescription(aboutSectionText),
+            path: '/about',
+            image: heroImage,
+            keywords: aboutKeywords,
+            items: aboutHighlights.map((item) => ({
+              name: item.label,
+              path: '/about',
+              description: `${item.value} ${item.label}`,
+            })),
+          }),
+        ]}
       />
       {/* Hero with gradient mesh */}
       <section className="relative flex items-center justify-center gradient-hero overflow-hidden pt-32 pb-14 sm:pt-36 sm:pb-20">

@@ -3,16 +3,18 @@ import { useQuery } from '@tanstack/react-query';
 import { Search, Droplets } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { t, localizedField } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import SkeletonCard from '@/components/ui/SkeletonCard';
 import SEO from '@/components/SEO';
-import { buildBreadcrumbSchema, buildCollectionPageSchema, sanitizeDescription } from '@/lib/seo';
+import { buildBreadcrumbSchema, buildCollectionPageSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, pickPrimaryImage, sanitizeDescription } from '@/lib/seo';
 import { Product, Category, PaginatedResponse } from '@/types';
 
 const ProductsPage = () => {
   const { lang } = useLang();
+  const settings = useSettings();
   const [page, setPage] = useState(1);
   const [categoryId, setCategoryId] = useState<string | undefined>();
   const [saleOnly, setSaleOnly] = useState(false);
@@ -35,13 +37,25 @@ const ProductsPage = () => {
   const totalPages = products?.total_pages || products?.pages || 1;
   const cats = categories || [];
   const activeCategory = cats.find((category) => category.id === categoryId);
+  const activeCategoryName = activeCategory ? localizedField(activeCategory, 'name', lang) : undefined;
   const pageTitle = activeCategory
-    ? `${localizedField(activeCategory, 'name', lang)} | ECO COMPANY`
+    ? `${activeCategoryName} | ECO COMPANY`
     : `${t('nav_products', lang)} | ECO COMPANY`;
   const pageDescription = sanitizeDescription(
     activeCategory
-      ? `${localizedField(activeCategory, 'name', lang)} katalogi va premium tozalangan suv mahsulotlari.`
+      ? `${activeCategoryName} katalogi va premium tozalangan suv mahsulotlari.`
       : "Premium tozalangan suv mahsulotlari katalogi va buyurtma uchun mavjud barcha pozitsiyalar.",
+  );
+  const seoImage = pickPrimaryImage(items[0]?.images?.[0], items[0]?.image_url, '/images/about.jpg');
+  const shouldNoindex = page > 1 || saleOnly || !!categoryId || !!search.trim();
+  const pageKeywords = mergeKeywords(
+    localizedField(settings, 'seo_keywords', lang),
+    localizedField(settings, 'seo_products_keywords', lang),
+    defaultSeoKeywords(lang),
+    t('nav_products', lang),
+    activeCategoryName,
+    keywordPhrase(activeCategoryName, lang === 'uz' ? 'narxi' : lang === 'ru' ? 'цена' : 'price'),
+    items.slice(0, 8).map((item) => localizedField(item, 'name', lang) || ''),
   );
 
   return (
@@ -49,7 +63,10 @@ const ProductsPage = () => {
       <SEO
         title={pageTitle}
         description={pageDescription}
+        image={seoImage}
+        keywords={pageKeywords}
         canonicalPath="/products"
+        noindex={shouldNoindex}
         lang={lang}
         structuredData={[
           buildBreadcrumbSchema([
@@ -60,9 +77,13 @@ const ProductsPage = () => {
             name: pageTitle,
             description: pageDescription,
             path: '/products',
+            image: seoImage,
+            keywords: pageKeywords,
             items: items.map((item) => ({
               name: localizedField(item, 'name', lang) || 'Product',
               path: `/products/${item.id}`,
+              image: item.images?.[0] || item.image_url,
+              description: localizedField(item, 'desc', lang) || localizedField(item, 'description', lang),
             })),
           }),
         ]}

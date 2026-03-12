@@ -9,7 +9,7 @@ import { api } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import { useState } from 'react';
 import SEO from '@/components/SEO';
-import { buildBreadcrumbSchema, buildProductSchema, sanitizeDescription } from '@/lib/seo';
+import { buildBreadcrumbSchema, buildProductSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, sanitizeDescription } from '@/lib/seo';
 import { Product, PaginatedResponse } from '@/types';
 
 const ProductDetailPage = () => {
@@ -39,6 +39,12 @@ const ProductDetailPage = () => {
       : "Premium tozalangan suv mahsuloti haqida batafsil ma'lumot.",
   );
   const seoImage = product?.images?.[0] || product?.image_url || '/images/about.jpg';
+  const fallbackKeywords = mergeKeywords(
+    localizedField(settings, 'seo_keywords', lang),
+    localizedField(settings, 'seo_products_keywords', lang),
+    defaultSeoKeywords(lang),
+    productName,
+  );
 
   if (isLoading) return (
     <>
@@ -46,6 +52,7 @@ const ProductDetailPage = () => {
         title={`${productName} | ECO COMPANY`}
         description={productDescription}
         image={seoImage}
+        keywords={fallbackKeywords}
         canonicalPath={id ? `/products/${id}` : '/products'}
         lang={lang}
       />
@@ -72,6 +79,17 @@ const ProductDetailPage = () => {
   const images = product.images?.length ? product.images : (product.image_url ? [product.image_url] : []);
   const isDiscount = product.is_on_sale && product.is_discount_active;
   const relatedItems = related?.items || [];
+  const categoryName = product.category ? localizedField(product.category, 'name', lang) : undefined;
+  const productKeywords = mergeKeywords(
+    localizedField(settings, 'seo_keywords', lang),
+    localizedField(settings, 'seo_products_keywords', lang),
+    defaultSeoKeywords(lang),
+    name,
+    categoryName,
+    keywordPhrase(name, lang === 'uz' ? 'narxi' : lang === 'ru' ? 'цена' : 'price'),
+    keywordPhrase('ECO COMPANY', name),
+    keywordPhrase(categoryName, lang === 'uz' ? "tozalangan suv" : lang === 'ru' ? 'очищенная вода' : 'purified water'),
+  );
 
   return (
     <div className="pt-36 pb-20 min-h-screen bg-gradient-to-b from-sky-50/50 to-background dark:from-[hsl(222,47%,8%)] dark:to-background relative overflow-hidden">
@@ -79,6 +97,7 @@ const ProductDetailPage = () => {
         title={`${name} | ECO COMPANY`}
         description={productDescription}
         image={seoImage}
+        keywords={productKeywords}
         canonicalPath={`/products/${product.id}`}
         lang={lang}
         structuredData={[
@@ -87,7 +106,7 @@ const ProductDetailPage = () => {
             { name: t('nav_products', lang), path: '/products' },
             { name, path: `/products/${product.id}` },
           ]),
-          buildProductSchema(product, lang),
+          buildProductSchema(product, lang, productKeywords),
         ]}
       />
       {/* Background Orbs */}

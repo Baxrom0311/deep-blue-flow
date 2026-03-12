@@ -14,7 +14,7 @@ import ProductCard from '@/components/ui/ProductCard';
 import SkeletonCard from '@/components/ui/SkeletonCard';
 import MediaLightbox from '@/components/ui/MediaLightbox';
 import SEO from '@/components/SEO';
-import { buildOrganizationSchema, buildWebsiteSchema, sanitizeDescription } from '@/lib/seo';
+import { buildItemListSchema, buildOrganizationSchema, buildSiteNavigationSchema, buildWebsiteSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, sanitizeDescription } from '@/lib/seo';
 import { Product, Album, AlbumItem, Certificate, InstagramVideo, PaginatedResponse } from '@/types';
 
 const LEGACY_PARTNER_LOGOS = [
@@ -729,11 +729,36 @@ const PartnersSection = () => {
 const HomePage = () => {
   const { lang } = useLang();
   const settings = useSettings();
+  const { data: featuredProductsData } = useQuery<PaginatedResponse<Product>>({
+    queryKey: ['featured-products'],
+    queryFn: api.getFeaturedProducts,
+    staleTime: 5 * 60 * 1000,
+  });
   const title = `${settings.hero_badge || t('hero_badge', lang)} | ECO COMPANY`;
   const description = sanitizeDescription(
     localizedField(settings, 'hero_subtitle', lang) || localizedField(settings, 'about_text', lang),
   );
   const heroImage = String(settings.hero_image_url || '/images/about.jpg');
+  const featuredProducts = featuredProductsData?.items || [];
+  const navigationItems = [
+    { name: t('nav_home', lang), path: '/' },
+    { name: t('nav_products', lang), path: '/products' },
+    { name: t('nav_about', lang), path: '/about' },
+    { name: t('nav_certificates', lang), path: '/certificates' },
+    { name: t('nav_gallery', lang), path: '/gallery' },
+    { name: t('nav_contact', lang), path: '/contact' },
+  ];
+  const homeKeywords = mergeKeywords(
+    localizedField(settings, 'seo_keywords', lang),
+    localizedField(settings, 'seo_home_keywords', lang),
+    defaultSeoKeywords(lang),
+    settings.hero_badge || '',
+    localizedField(settings, 'hero_title', lang),
+    localizedField(settings, 'hero_subtitle', lang),
+    navigationItems.map((item) => item.name),
+    featuredProducts.slice(0, 6).map((product) => localizedField(product, 'name', lang) || ''),
+    keywordPhrase('ECO COMPANY', lang === 'uz' ? 'premium tozalangan suv' : lang === 'ru' ? 'премиальная очищенная вода' : 'premium purified water'),
+  );
 
   return (
     <div className="gradient-home-flow">
@@ -741,10 +766,23 @@ const HomePage = () => {
         title={title}
         description={description}
         image={heroImage}
+        keywords={homeKeywords}
         lang={lang}
         structuredData={[
-          buildWebsiteSchema(),
-          buildOrganizationSchema(settings, lang),
+          buildWebsiteSchema(homeKeywords),
+          buildOrganizationSchema(settings, lang, homeKeywords),
+          buildSiteNavigationSchema(navigationItems),
+          ...(featuredProducts.length > 0 ? [
+            buildItemListSchema({
+              name: `${t('featured_title', lang)} | ECO COMPANY`,
+              path: '/',
+              items: featuredProducts.map((product) => ({
+                name: localizedField(product, 'name', lang) || 'Product',
+                path: `/products/${product.id}`,
+                image: product.images?.[0] || product.image_url,
+              })),
+            }),
+          ] : []),
         ]}
       />
       <AboutPreview />
