@@ -15,7 +15,7 @@ import SkeletonCard from '@/components/ui/SkeletonCard';
 import MediaLightbox from '@/components/ui/MediaLightbox';
 import SEO from '@/components/SEO';
 import { buildOrganizationSchema, buildWebsiteSchema, sanitizeDescription } from '@/lib/seo';
-import { Product, Album, Certificate, InstagramVideo, PaginatedResponse } from '@/types';
+import { Product, Album, AlbumItem, Certificate, InstagramVideo, PaginatedResponse } from '@/types';
 
 const LEGACY_PARTNER_LOGOS = [
   '/media/partners/NGMK.jpg',
@@ -53,6 +53,12 @@ const getPartnerAlt = (url: string, index: number) => {
   const fileName = url.split('/').pop()?.replace(/\.[^.]+$/, '') || `partner-${index + 1}`;
   return decodeURIComponent(fileName).replace(/[-_]+/g, ' ');
 };
+
+const getGalleryItemMediaUrl = (item?: AlbumItem | null) =>
+  item?.file_url || item?.url || item?.image_url || item?.thumbnail_url || null;
+
+const getGalleryItemPreviewUrl = (item?: AlbumItem | null) =>
+  item?.thumbnail_url || item?.image_url || item?.file_url || item?.url || null;
 
 
 /* ── About Preview / Hero ── */
@@ -327,29 +333,41 @@ const ProductsCarousel = () => {
   );
 };
 
-/* ── Gallery Album Card (fetches cover individually) ── */
-const GalleryAlbumCard = ({ album, lang }: { album: Album; lang: Lang }) => {
-  const { data: albumDetail } = useQuery({
-    queryKey: ['album-detail', album.id],
-    queryFn: () => api.getAlbum(album.id),
-    staleTime: 10 * 60 * 1000,
-  });
+type GalleryPreviewSlide = {
+  key: string;
+  albumTitle: string;
+  photoCount: number;
+  previewUrl: string | null;
+  mediaUrl: string | null;
+  isVideo: boolean;
+};
 
-  const coverImg = albumDetail?.items?.[0]?.thumbnail_url || albumDetail?.items?.[0]?.file_url || album.cover_url || album.cover_image || null;
-  const photoCount = album.items_count || albumDetail?.items?.length || 0;
+/* ── Gallery Preview Card ── */
+const GalleryPreviewCard = ({ slide }: { slide: GalleryPreviewSlide }) => {
+  const { albumTitle, photoCount, previewUrl, mediaUrl, isVideo } = slide;
 
   return (
     <Link to="/gallery" className="w-[340px] shrink-0 group block" draggable={false}>
       <div className="relative h-[240px] rounded-2xl overflow-hidden shadow-water hover-lift">
         {/* Full background image or gradient placeholder */}
-        {coverImg ? (
-          <img
-            src={coverImg}
-            alt={localizedField(album, 'title', lang)}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-            loading="lazy"
-            draggable={false}
-          />
+        {previewUrl || mediaUrl ? (
+          isVideo && !previewUrl ? (
+            <video
+              src={mediaUrl || undefined}
+              muted
+              playsInline
+              preload="metadata"
+              className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+            />
+          ) : (
+            <img
+              src={previewUrl || mediaUrl || undefined}
+              alt={albumTitle}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              loading="lazy"
+              draggable={false}
+            />
+          )
         ) : (
           <div className="absolute inset-0 gradient-ocean flex items-center justify-center">
             <Droplets size={48} className="text-white/30" />
@@ -365,10 +383,16 @@ const GalleryAlbumCard = ({ album, lang }: { album: Album; lang: Lang }) => {
           {photoCount}
         </div>
 
+        {isVideo && (
+          <div className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md">
+            <PlayCircle size={18} />
+          </div>
+        )}
+
         {/* Title — bottom */}
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <h3 className="font-display text-lg text-white font-bold leading-snug drop-shadow-md">
-            {localizedField(album, 'title', lang)}
+            {albumTitle}
           </h3>
         </div>
       </div>
@@ -381,8 +405,29 @@ const GalleryCarousel = () => {
   const { lang } = useLang();
   const { data: albumsData } = useQuery({ queryKey: ['albums'], queryFn: () => api.getAlbums(), staleTime: 5 * 60 * 1000 });
   const albums = Array.isArray(albumsData) ? albumsData : albumsData?.items || [];
+  const slides = albums.flatMap((album: Album) => {
+    const previewItems = album.preview_items?.length
+      ? album.preview_items
+      : (album.cover_url ? [{
+          id: `${album.id}-cover`,
+          file_url: album.cover_url,
+          thumbnail_url: album.cover_thumbnail_url,
+          file_type: album.cover_file_type,
+        }] : []);
 
-  if (albums.length === 0) return null;
+    return previewItems
+      .map((item, index) => ({
+        key: `${album.id}-${item.id || index}`,
+        albumTitle: localizedField(album, 'title', lang),
+        photoCount: album.items_count || previewItems.length,
+        previewUrl: getGalleryItemPreviewUrl(item),
+        mediaUrl: getGalleryItemMediaUrl(item),
+        isVideo: item.file_type === 'video',
+      }))
+      .filter((item) => item.previewUrl || item.mediaUrl);
+  });
+
+  if (slides.length === 0) return null;
 
   return (
     <section className="py-16 bg-transparent relative overflow-hidden">
@@ -417,8 +462,8 @@ const GalleryCarousel = () => {
           const CARD_W = 340;
           const GAP = 24;
           const SLOT = CARD_W + GAP;
-          const repeatCount = Math.max(2, Math.ceil(2000 / (albums.length * SLOT)));
-          const oneSet = Array.from({ length: repeatCount }, () => albums).flat();
+          const repeatCount = Math.max(2, Math.ceil(2200 / Math.max(slides.length * SLOT, SLOT)));
+          const oneSet = Array.from({ length: repeatCount }, () => slides).flat();
           const setWidth = oneSet.length * SLOT;
           const allItems = [...oneSet, ...oneSet];
 
@@ -433,8 +478,8 @@ const GalleryCarousel = () => {
               onMouseEnter={e => (e.currentTarget.style.animationPlayState = 'paused')}
               onMouseLeave={e => (e.currentTarget.style.animationPlayState = 'running')}
             >
-              {allItems.map((album: Album, i: number) => (
-                <GalleryAlbumCard key={`${album.id}-${i}`} album={album} lang={lang} />
+              {allItems.map((slide: GalleryPreviewSlide, i: number) => (
+                <GalleryPreviewCard key={`${slide.key}-${i}`} slide={slide} />
               ))}
             </div>
           );
@@ -688,13 +733,14 @@ const HomePage = () => {
   const description = sanitizeDescription(
     localizedField(settings, 'hero_subtitle', lang) || localizedField(settings, 'about_text', lang),
   );
+  const heroImage = String(settings.hero_image_url || '/images/about.jpg');
 
   return (
     <div className="gradient-home-flow">
       <SEO
         title={title}
         description={description}
-        image="/images/about.jpg"
+        image={heroImage}
         lang={lang}
         structuredData={[
           buildWebsiteSchema(),

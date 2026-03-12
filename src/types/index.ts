@@ -60,9 +60,12 @@ export interface Album {
     title_ru: string;
     title_en: string;
     cover_url?: string;
+    cover_thumbnail_url?: string;
+    cover_file_type?: 'image' | 'video';
     cover_image?: string;
     items_count?: number;
     items?: AlbumItem[];
+    preview_items?: AlbumItem[];
 }
 
 /* ── Certificate ── */

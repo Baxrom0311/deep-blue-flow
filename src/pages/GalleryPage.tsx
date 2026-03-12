@@ -9,7 +9,7 @@ import MediaLightbox from '@/components/ui/MediaLightbox';
 import SEO from '@/components/SEO';
 import { buildBreadcrumbSchema, buildCollectionPageSchema, sanitizeDescription } from '@/lib/seo';
 
-/* ── Album Card with individual cover fetching ── */
+/* ── Album Card ── */
 import { Album, AlbumItem } from '@/types';
 
 const getMediaUrl = (item?: AlbumItem | null) =>
@@ -19,17 +19,10 @@ const getPreviewUrl = (item?: AlbumItem | null) =>
   item?.thumbnail_url || item?.image_url || item?.file_url || item?.url || null;
 
 const AlbumCard = ({ album, lang, onClick, index }: { album: Album; lang: Lang; onClick: () => void; index: number }) => {
-  const { data: albumDetail } = useQuery({
-    queryKey: ['album-detail', album.id],
-    queryFn: () => api.getAlbum(album.id),
-    staleTime: 10 * 60 * 1000,
-  });
-
-  const coverItem = albumDetail?.items?.[0];
-  const coverIsVideo = coverItem?.file_type === 'video';
-  const coverImg = getPreviewUrl(coverItem) || album.cover_url || album.cover_image || null;
-  const coverVideoUrl = coverIsVideo ? getMediaUrl(coverItem) : null;
-  const photoCount = album.items_count || albumDetail?.items?.length || 0;
+  const coverIsVideo = album.cover_file_type === 'video';
+  const coverImg = album.cover_thumbnail_url || album.cover_image || (!coverIsVideo ? album.cover_url : null) || null;
+  const coverVideoUrl = coverIsVideo ? album.cover_url || null : null;
+  const photoCount = album.items_count || 0;
 
   return (
     <motion.button
