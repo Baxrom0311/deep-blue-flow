@@ -11,15 +11,36 @@ import {
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
+export class ApiError extends Error {
+  constructor(message: string, public status: number) { super(message); }
+}
+
+function errorMessage(body: unknown): string {
+  if (!body || typeof body !== 'object') return 'Server xatosi';
+  const err = body as { message?: unknown; detail?: unknown };
+  if (Array.isArray(err.detail)) {
+    const msgs = err.detail.map((item: unknown) => {
+      if (!item || typeof item !== 'object') return '';
+      const v = item as { message?: unknown; msg?: unknown };
+      return typeof v.message === 'string' ? v.message : typeof v.msg === 'string' ? v.msg : '';
+    }).filter(Boolean);
+    if (msgs.length) return msgs.join('; ');
+  }
+  if (typeof err.message === 'string') return err.message;
+  return typeof err.detail === 'string' ? err.detail : 'Server xatosi';
+}
+
 async function fetchAPI<T = unknown>(endpoint: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
   });
-  if (!res.ok) throw new Error(`API Error: ${res.status}`);
-  const json = await res.json();
+  const body: unknown = await res.json().catch(() => null);
+  if (!res.ok) throw new ApiError(errorMessage(body), res.status);
   // Unwrap Backend {success, data} wrapper if present
-  return json.data !== undefined ? (json.data as T) : (json as T);
+  return (body as { data?: T } | null)?.data !== undefined
+    ? ((body as { data: T }).data as T)
+    : (body as T);
 }
 
 export const api = {
