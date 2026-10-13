@@ -33,7 +33,7 @@ export const api = {
     if (params?.search?.trim()) sp.set('search', params.search.trim());
     return fetchAPI<PaginatedResponse<Product>>(`/products?${sp.toString()}`);
   },
-  getFeaturedProducts: () => fetchAPI<PaginatedResponse<Product>>('/products/featured'),
+  getFeaturedProducts: () => fetchAPI<Product[]>('/products/featured'),
   getProduct: (id: string) => fetchAPI<Product>(`/products/${id}`),
   getCategories: () => fetchAPI<Category[]>('/categories'),
   getCertificates: () => fetchAPI<Certificate[] | PaginatedResponse<Certificate>>('/certificates'),
@@ -45,6 +45,6 @@ export const api = {
   getInstagramPosts: () => fetchAPI<InstagramVideo[]>('/instagram/posts'),
   submitContact: (data: ContactFormData) =>
     fetchAPI<unknown>('/contacts', { method: 'POST', body: JSON.stringify(data) }),
-  chat: (message: string, session_id: string) =>
-    fetchAPI<unknown>('/chat', { method: 'POST', body: JSON.stringify({ message, session_id }) }),
+  chat: (message: string, session_id: string | null) =>
+    fetchAPI<{ reply: string; session_id: string }>('/chat', { method: 'POST', body: JSON.stringify({ message, session_id }) }),
 };

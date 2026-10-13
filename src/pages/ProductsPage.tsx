@@ -138,7 +138,7 @@ const ProductsPage = () => {
               >
                 {t('all', lang)}
               </button>
-              {cats.map((c: any) => (
+              {cats.map((c) => (
                 <button
                   key={c.id}
                   onClick={() => { setCategoryId(c.id); setPage(1); }}
@@ -169,7 +169,7 @@ const ProductsPage = () => {
           {isLoading
             ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
             : items.length > 0
-              ? items.map((p: any, i: number) => <ProductCard key={p.id} product={p} index={i} />)
+              ? items.map((p, i: number) => <ProductCard key={p.id} product={p} index={i} />)
               : (
                 <div className="col-span-full text-center py-32 glass rounded-[3rem]">
                   <div className="w-20 h-20 mx-auto rounded-3xl bg-muted/50 flex items-center justify-center mb-6 shadow-sm border border-border">

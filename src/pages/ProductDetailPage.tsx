@@ -252,7 +252,7 @@ const ProductDetailPage = () => {
           <div className="mt-32 pt-20 border-t border-slate-100 relative">
             <h2 className="font-display text-3xl md:text-4xl font-black text-foreground mb-10 text-center tracking-tight">O'xshash Mahsulotlar</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {relatedItems.filter((p: any) => p.id !== id).slice(0, 4).map((p: any, i: number) => <ProductCard key={p.id} product={p} index={i} />)}
+              {relatedItems.filter((p) => p.id !== id).slice(0, 4).map((p, i: number) => <ProductCard key={p.id} product={p} index={i} />)}
             </div>
           </div>
         )}

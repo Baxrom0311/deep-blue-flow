@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node ./scripts/generate-sitemap.mjs && vite build",
-    "build:dev": "node ./scripts/generate-sitemap.mjs && vite build --mode development",
+    "build": "npm run typecheck && node ./scripts/generate-sitemap.mjs && vite build",
+    "build:dev": "npm run typecheck && node ./scripts/generate-sitemap.mjs --mode development && vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
+    "test:sitemap": "node --test scripts/generate-sitemap.test.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

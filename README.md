@@ -1,28 +1,22 @@
-# ECO COMPANY Frontend
+# ECO COMPANY sayt
 
-Bu loyiha ECO COMPANY mijozlar uchun foydalanuvchi interfeysi hisoblanadi.
+React + TypeScript + Vite mijoz sayti: uch til, mahsulotlar, galereya, sertifikatlar, aloqa va AI chatbot.
 
-## Texnologiyalar
+```sh
+npm ci
+npm run dev
+```
 
-- [Vite](https://vitejs.dev/)
-- [React](https://reactjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [shadcn/ui](https://ui.shadcn.com/)
+Sayt `http://localhost:8080` da ishlaydi. `.env` uchun `VITE_API_URL=http://localhost:8000/api/v1` qo‘ying va backend CORS ro‘yxatiga sayt originini qo‘shing. Production uchun `.env.production.example` dagi API va sayt domenlarini sozlang. `VITE_GOOGLE_SITE_VERIFICATION` ixtiyoriy; bo‘sh bo‘lsa HTML ga verification meta qo‘shilmaydi.
 
-## Ishga tushirish
+```sh
+npm run typecheck
+npm run lint
+npm test
+npm run test:sitemap
+npm run build
+```
 
-1. Qaramliklarni o'rnatish:
-   ```bash
-   npm install
-   ```
+Build TypeScript tekshiradi, `.env.production` qiymatlarini o‘qib sitemap yaratadi va `dist/` ni yig‘adi. Sitemap mahsulotlar uchun API ga so‘rov yuboradi; `SITEMAP_API_URL` bilan alohida manzil berish mumkin. Har so‘rov timeouti 10 soniya. API ishlamasa shu domenga tegishli oldingi sitemap saqlanadi; oldingi sitemap bo‘lmasa statik sahifalar yoziladi. Har ikki holatda warning chiqariladi. Mahsulotlar o‘zgarganda qayta build qiling yoki backendning dinamik sitemapini tegishli proxy orqali bering.
 
-2. Rivojlanish serverini ishga tushirish:
-   ```bash
-   npm run dev
-   ```
-
-3. Loyihani build qilish:
-   ```bash
-   npm run build
-   ```
+Statik hostingda SPA route lar uchun `index.html` fallback kerak. Chat pastki o‘ng tugmada; DeepSeek kaliti faqat backend `.env` da sozlanadi. Chat regression testi keyingi xabar server qaytargan sessiya ID si bilan yuborilishini tekshiradi.

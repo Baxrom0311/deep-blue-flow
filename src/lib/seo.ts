@@ -1,4 +1,5 @@
 import { localizedField, type Lang } from '@/lib/i18n';
+export type { Lang } from '@/lib/i18n';
 import type { Product, SiteSettings } from '@/types';
 
 export const SITE_NAME = 'ECO COMPANY';

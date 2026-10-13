@@ -180,7 +180,7 @@ const GalleryPage = () => {
             </div>
           ) : !selectedAlbumId ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {albums.map((album: any, i: number) => (
+              {albums.map((album, i: number) => (
                 <AlbumCard
                   key={album.id}
                   album={album}
@@ -202,7 +202,7 @@ const GalleryPage = () => {
                 {localizedField(albumDetail || {}, 'title', lang)}
               </h2>
               <div className="columns-2 md:columns-3 gap-6 space-y-6">
-                {(albumDetail?.items || []).map((item: any) => (
+                {(albumDetail?.items || []).map((item) => (
                   <motion.div
                     key={item.id}
                     initial={{ opacity: 0 }}

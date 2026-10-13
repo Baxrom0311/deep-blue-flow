@@ -21,11 +21,8 @@ const ChatWidget = () => {
   const [typing, setTyping] = useState(false);
   const messagesEnd = useRef<HTMLDivElement>(null);
 
-  const sessionId = useRef(sessionStorage.getItem('eco-chat-session') || (() => {
-    const id = crypto.randomUUID();
-    sessionStorage.setItem('eco-chat-session', id);
-    return id;
-  })());
+  const sessionId = useRef<string | null>(sessionStorage.getItem('eco-chat-session'));
+  const sending = useRef(false);
 
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' });
@@ -34,11 +31,14 @@ const ChatWidget = () => {
   const mutation = useMutation({
     mutationFn: (msg: string) => api.chat(msg, sessionId.current),
     onMutate: () => setTyping(true),
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
+      sessionId.current = data.session_id;
+      sessionStorage.setItem('eco-chat-session', data.session_id);
       setTyping(false);
-      const reply = data?.reply || data?.response || data?.message || data?.answer || "Kechirasiz, qayta urinib ko'ring.";
+      const reply = data.reply || "Kechirasiz, qayta urinib ko'ring.";
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     },
+    onSettled: () => { sending.current = false; },
     onError: () => {
       setTyping(false);
       setMessages(prev => [...prev, { role: 'assistant', content: `Kechirasiz, ${s.phone_1 || 'telefon raqamimiz'}ga qo'ng'iroq qiling` }]);
@@ -47,7 +47,8 @@ const ChatWidget = () => {
 
   const send = () => {
     const msg = input.trim();
-    if (!msg) return;
+    if (!msg || sending.current) return;
+    sending.current = true;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: msg }]);
     mutation.mutate(msg);
@@ -64,6 +65,7 @@ const ChatWidget = () => {
             exit={{ scale: 0 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            aria-label={t('chat_title', lang)}
             onClick={() => setOpen(true)}
             className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary shadow-glow flex items-center justify-center text-primary-foreground"
           >
@@ -96,7 +98,7 @@ const ChatWidget = () => {
                   </span>
                 </div>
               </div>
-              <button onClick={() => setOpen(false)} className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+              <button aria-label="Close chat" onClick={() => setOpen(false)} className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -140,6 +142,8 @@ const ChatWidget = () => {
             <div className="p-3 border-t border-border">
               <form onSubmit={e => { e.preventDefault(); send(); }} className="flex gap-2">
                 <input
+                  aria-label={t('chat_placeholder', lang)}
+                  maxLength={1000}
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   placeholder={t('chat_placeholder', lang)}
@@ -147,7 +151,8 @@ const ChatWidget = () => {
                 />
                 <button
                   type="submit"
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || typing}
+                  aria-label={t('contact_send', lang)}
                   className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-all"
                 >
                   <Send size={16} />

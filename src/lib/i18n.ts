@@ -56,6 +56,8 @@ export function t(key: string, lang: Lang): string {
   return translations[key]?.[lang] ?? key;
 }
 
-export function localizedField(obj: any, field: string, lang: Lang): string {
-  return obj?.[`${field}_${lang}`] || obj?.[`${field}_uz`] || obj?.[field] || '';
+export function localizedField(obj: object | null | undefined, field: string, lang: Lang): string {
+  const values = obj as Record<string, unknown> | null | undefined;
+  return [values?.[`${field}_${lang}`], values?.[`${field}_uz`], values?.[field]]
+    .find((value): value is string => typeof value === 'string' && value.length > 0) || '';
 }

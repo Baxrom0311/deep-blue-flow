@@ -1,8 +1,13 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { loadEnv } from 'vite';
 
-const siteUrl = (process.env.VITE_SITE_URL || 'https://ecocompany.boos.uz').replace(/\/$/, '');
-const apiUrl = (process.env.SITEMAP_API_URL || process.env.VITE_API_URL || `${siteUrl}/api/v1`).replace(/\/$/, '');
+const modeIndex = process.argv.indexOf('--mode');
+const mode = modeIndex >= 0 ? process.argv[modeIndex + 1] : 'production';
+const env = { ...loadEnv(mode, process.cwd(), ''), ...process.env };
+
+const siteUrl = (env.VITE_SITE_URL || 'https://ecocompany.boos.uz').replace(/\/$/, '');
+const apiUrl = (env.SITEMAP_API_URL || env.VITE_API_URL || `${siteUrl}/api/v1`).replace(/\/$/, '');
 const publicDir = path.resolve(process.cwd(), 'public');
 
 const staticRoutes = [
@@ -28,6 +33,7 @@ const fetchJSON = async (endpoint) => {
   const url = new URL(endpoint.replace(/^\//, ''), base);
   const response = await fetch(url, {
     headers: { Accept: 'application/json' },
+    signal: AbortSignal.timeout(10000),
   });
 
   if (!response.ok) {
@@ -78,6 +84,7 @@ const buildUrlEntry = ({ path: routePath, lastmod, changefreq, priority, images 
 const generateSitemap = async () => {
   const today = new Date().toISOString().slice(0, 10);
   const entries = [...staticRoutes];
+  let previousSitemap = null;
 
   try {
     const products = await fetchAllProducts();
@@ -97,10 +104,19 @@ const generateSitemap = async () => {
       });
     });
   } catch (error) {
-    console.warn(`[sitemap] Dynamic product URLs skipped: ${error.message}`);
+    console.warn(`[sitemap] Product API unavailable: ${error.message}`);
+    try {
+      const existing = await readFile(path.join(publicDir, 'sitemap.xml'), 'utf8');
+      const locations = [...existing.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
+      if (existing.includes('</urlset>') && locations.length && locations.every((loc) => loc.startsWith(`${escapeXml(siteUrl)}/`))) {
+        previousSitemap = existing;
+      }
+    } catch {
+      // First build: there is no last-known sitemap to preserve.
+    }
   }
 
-  const xml = [
+  const xml = previousSitemap || [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
     ...entries.map(buildUrlEntry),
@@ -120,7 +136,7 @@ const generateSitemap = async () => {
   await writeFile(path.join(publicDir, 'sitemap.xml'), xml, 'utf8');
   await writeFile(path.join(publicDir, 'robots.txt'), robots, 'utf8');
 
-  console.log(`[sitemap] Generated ${entries.length} URLs`);
+  console.log(previousSitemap ? '[sitemap] Preserved previous sitemap' : `[sitemap] Generated ${entries.length} URLs`);
 };
 
 generateSitemap().catch((error) => {

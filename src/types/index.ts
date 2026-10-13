@@ -29,6 +29,7 @@ export interface Product {
     discount_percent?: number;
     discount_until?: string;
     is_new?: boolean;
+    is_active?: boolean;
     is_on_sale?: boolean;
     is_discount_active?: boolean;
     category_id?: string;

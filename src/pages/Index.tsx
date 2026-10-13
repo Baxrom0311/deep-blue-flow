@@ -729,7 +729,7 @@ const PartnersSection = () => {
 const HomePage = () => {
   const { lang } = useLang();
   const settings = useSettings();
-  const { data: featuredProductsData } = useQuery<PaginatedResponse<Product>>({
+  const { data: featuredProductsData } = useQuery<Product[]>({
     queryKey: ['featured-products'],
     queryFn: api.getFeaturedProducts,
     staleTime: 5 * 60 * 1000,
@@ -739,7 +739,7 @@ const HomePage = () => {
     localizedField(settings, 'hero_subtitle', lang) || localizedField(settings, 'about_text', lang),
   );
   const heroImage = String(settings.hero_image_url || '/images/about.jpg');
-  const featuredProducts = featuredProductsData?.items || [];
+  const featuredProducts = featuredProductsData || [];
   const navigationItems = [
     { name: t('nav_home', lang), path: '/' },
     { name: t('nav_products', lang), path: '/products' },
