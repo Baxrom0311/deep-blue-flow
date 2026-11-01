@@ -3,7 +3,7 @@ export type { Lang } from '@/lib/i18n';
 import type { Product, SiteSettings } from '@/types';
 
 export const SITE_NAME = 'ECO COMPANY';
-export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://ecocompany.boos.uz').replace(/\/$/, '');
+export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://ecocompany.uz').replace(/\/$/, '');
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/about.jpg`;
 export const DEFAULT_DESCRIPTION = "ECO COMPANY - O'zbekistondagi premium tozalangan suv ishlab chiqaruvchisi.";
 

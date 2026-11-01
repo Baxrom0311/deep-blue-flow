@@ -6,7 +6,7 @@ const modeIndex = process.argv.indexOf('--mode');
 const mode = modeIndex >= 0 ? process.argv[modeIndex + 1] : 'production';
 const env = { ...loadEnv(mode, process.cwd(), ''), ...process.env };
 
-const siteUrl = (env.VITE_SITE_URL || 'https://ecocompany.boos.uz').replace(/\/$/, '');
+const siteUrl = (env.VITE_SITE_URL || 'https://ecocompany.uz').replace(/\/$/, '');
 const apiUrl = (env.SITEMAP_API_URL || env.VITE_API_URL || `${siteUrl}/api/v1`).replace(/\/$/, '');
 const publicDir = path.resolve(process.cwd(), 'public');
 

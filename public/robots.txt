@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ecocompany.boos.uz/sitemap.xml
+Sitemap: https://ecocompany.uz/sitemap.xml
