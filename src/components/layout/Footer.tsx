@@ -125,7 +125,7 @@ const Footer = () => {
 
           <div className="mt-8 flex justify-center md:justify-end">
             <p className="text-xs text-foreground/60 text-center md:text-right">
-              Created By: <a href="https://t.me/bakhromdev" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors font-bold">@Bakhromdev</a>
+              Created By: <a href="https://t.me/baxrom0311" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors font-bold">@baxrom0311</a>
             </p>
           </div>
         </div>
