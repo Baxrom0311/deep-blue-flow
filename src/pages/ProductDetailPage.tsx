@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import { useState } from 'react';
 import SEO from '@/components/SEO';
+import NotFound from '@/pages/NotFound';
 import { buildBreadcrumbSchema, buildProductSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, sanitizeDescription } from '@/lib/seo';
 import { Product, PaginatedResponse } from '@/types';
 
@@ -72,7 +73,7 @@ const ProductDetailPage = () => {
     </>
   );
 
-  if (!product) return null;
+  if (!product) return <NotFound />;
 
   const name = localizedField(product, 'name', lang);
   const desc = localizedField(product, 'desc', lang) || localizedField(product, 'description', lang);
