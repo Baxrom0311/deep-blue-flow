@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/products/:id",
-      "destination": "/spa-fallback.html"
+      "destination": "/spa-fallback"
     }
   ]
 }
