@@ -45,7 +45,7 @@ export const sanitizeDescription = (value?: string | null, fallback = DEFAULT_DE
 
   if (!clean) return fallback;
   if (clean.length <= maxLength) return clean;
-  return `${clean.slice(0, maxLength - 1).trimEnd()}...`;
+  return `${clean.slice(0, maxLength - 3).trimEnd()}...`;
 };
 
 const KEYWORD_SEPARATOR = /[\n,]+/;

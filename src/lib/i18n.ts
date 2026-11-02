@@ -1,4 +1,6 @@
 export type Lang = 'uz' | 'ru' | 'en';
+export const LANGS: Lang[] = ['uz', 'ru', 'en'];
+export const isLang = (value: unknown): value is Lang => LANGS.includes(value as Lang);
 
 const translations: Record<string, Record<Lang, string>> = {
   nav_home: { uz: "Bosh sahifa", ru: "Главная", en: "Home" },

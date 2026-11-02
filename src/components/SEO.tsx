@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useLang } from '@/contexts/LangContext';
+import { LANGS } from '@/lib/i18n';
 import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl, imageMimeType, localeForLang, type Lang } from '@/lib/seo';
 
 type StructuredData = Record<string, unknown> | Array<Record<string, unknown>>;
@@ -48,14 +50,18 @@ const SEO = ({
   type = 'website',
   canonicalPath,
   noindex = false,
-  lang = 'uz',
+  lang: langProp,
   structuredData,
 }: SEOProps) => {
   const location = useLocation();
+  const { lang: contextLang } = useLang();
+  const lang = langProp ?? contextLang;
 
   useEffect(() => {
     const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
-    const canonicalUrl = `${SITE_URL}${canonicalPath || location.pathname}`;
+    const basePath = canonicalPath || location.pathname;
+    const urlForLang = (l: Lang) => `${SITE_URL}${basePath}${l === 'uz' ? '' : `?lang=${l}`}`;
+    const canonicalUrl = urlForLang(lang);
     const ogImage = absoluteUrl(image);
     const robots = noindex ? 'noindex, nofollow' : 'index, follow';
     const keywordContent = Array.isArray(keywords)
@@ -87,6 +93,18 @@ const SEO = ({
     upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: ogImage });
     upsertMeta('meta[name="twitter:image:alt"]', { name: 'twitter:image:alt', content: fullTitle });
     upsertLink('link[rel="canonical"]', { rel: 'canonical', href: canonicalUrl });
+    LANGS.forEach((l) => {
+      if (noindex) {
+        document.head.querySelector(`link[rel="alternate"][hreflang="${l}"]`)?.remove();
+      } else {
+        upsertLink(`link[rel="alternate"][hreflang="${l}"]`, { rel: 'alternate', hreflang: l, href: urlForLang(l) });
+      }
+    });
+    if (noindex) {
+      document.head.querySelector('link[rel="alternate"][hreflang="x-default"]')?.remove();
+    } else {
+      upsertLink('link[rel="alternate"][hreflang="x-default"]', { rel: 'alternate', hreflang: 'x-default', href: urlForLang('uz') });
+    }
 
     const existingJsonLd = document.head.querySelector('#seo-structured-data');
     if (existingJsonLd) existingJsonLd.remove();

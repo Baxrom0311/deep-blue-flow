@@ -59,11 +59,18 @@ const fetchAllProducts = async () => {
   return products;
 };
 
-const buildUrlEntry = ({ path: routePath, lastmod, changefreq, priority, images = [] }) => {
+const LANGS = ['uz', 'ru', 'en'];
+const urlForLang = (routePath, lang) => `${siteUrl}${routePath}${lang === 'uz' ? '' : `?lang=${lang}`}`;
+
+const buildUrlEntry = ({ path: routePath, lang = 'uz', lastmod, changefreq, priority, images = [] }) => {
   const lines = [
     '  <url>',
-    `    <loc>${escapeXml(`${siteUrl}${routePath}`)}</loc>`,
+    `    <loc>${escapeXml(urlForLang(routePath, lang))}</loc>`,
   ];
+  for (const alternate of LANGS) {
+    lines.push(`    <xhtml:link rel="alternate" hreflang="${alternate}" href="${escapeXml(urlForLang(routePath, alternate))}"/>`);
+  }
+  lines.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(urlForLang(routePath, 'uz'))}"/>`);
 
   if (lastmod) lines.push(`    <lastmod>${escapeXml(lastmod)}</lastmod>`);
   if (changefreq) lines.push(`    <changefreq>${changefreq}</changefreq>`);
@@ -118,8 +125,8 @@ const generateSitemap = async () => {
 
   const xml = previousSitemap || [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
-    ...entries.map(buildUrlEntry),
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+    ...entries.flatMap((entry) => LANGS.map((lang) => buildUrlEntry({ ...entry, lang }))),
     '</urlset>',
     '',
   ].join('\n');
@@ -136,7 +143,7 @@ const generateSitemap = async () => {
   await writeFile(path.join(publicDir, 'sitemap.xml'), xml, 'utf8');
   await writeFile(path.join(publicDir, 'robots.txt'), robots, 'utf8');
 
-  console.log(previousSitemap ? '[sitemap] Preserved previous sitemap' : `[sitemap] Generated ${entries.length} URLs`);
+  console.log(previousSitemap ? '[sitemap] Preserved previous sitemap' : `[sitemap] Generated ${entries.length * LANGS.length} URLs`);
 };
 
 generateSitemap().catch((error) => {
