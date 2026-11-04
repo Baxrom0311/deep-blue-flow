@@ -64,7 +64,7 @@ const Navbar = () => {
                 ECO COMPANY
               </span>
               <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">
-                Premium Water
+                Water Filters
               </span>
             </div>
           </Link>
