@@ -37,7 +37,7 @@ const ProductDetailPage = () => {
   const productDescription = sanitizeDescription(
     product
       ? localizedField(product, 'desc', lang) || localizedField(product, 'description', lang)
-      : "Premium tozalangan suv mahsuloti haqida batafsil ma'lumot.",
+      : "Suv tozalash filtri haqida batafsil ma'lumot.",
   );
   const seoImage = product?.images?.[0] || product?.image_url || '/images/about.jpg';
   const fallbackKeywords = mergeKeywords(
@@ -89,7 +89,7 @@ const ProductDetailPage = () => {
     categoryName,
     keywordPhrase(name, lang === 'uz' ? 'narxi' : lang === 'ru' ? 'цена' : 'price'),
     keywordPhrase('ECO COMPANY', name),
-    keywordPhrase(categoryName, lang === 'uz' ? "tozalangan suv" : lang === 'ru' ? 'очищенная вода' : 'purified water'),
+    keywordPhrase(categoryName, lang === 'uz' ? "suv filtri" : lang === 'ru' ? 'фильтр для воды' : 'water filter'),
   );
 
   return (

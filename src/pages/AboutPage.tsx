@@ -58,7 +58,7 @@ const AboutPage = () => {
   const aboutPageTitle = localizedField(s, 'about_page_title', lang) || t('about_title', lang);
   const aboutSectionBadge = localizedField(s, 'about_section_badge', lang) || (lang === 'uz' ? "Biz haqimizda" : lang === 'ru' ? "О нас" : "About us");
   const aboutSectionTitle = localizedField(s, 'about_section_title', lang) || (lang === 'uz' ? "Sifatli suv — sog'lom hayot kafolati" : lang === 'ru' ? "Качественная вода — залог здоровья" : "Quality water — guarantee of health");
-  const aboutSectionText = localizedField(s, 'about_text', lang) || "ECO COMPANY — O'zbekistondagi yetakchi tozalangan suv ishlab chiqaruvchi kompaniya. Biz zamonaviy texnologiyalar yordamida eng sifatli ichimlik suvini taqdim etamiz.";
+  const aboutSectionText = localizedField(s, 'about_text', lang) || "ECO COMPANY — suv tozalash filtrlari ishlab chiqaruvchi kompaniya. Uy va ofis uchun suv filtrlari, teskari osmos tizimlari va kartridjlar.";
   const valuesBadge = localizedField(s, 'about_values_badge', lang) || (lang === 'uz' ? "Nima uchun biz?" : lang === 'ru' ? "Почему мы?" : "Why us?");
   const valuesTitle = localizedField(s, 'about_values_title', lang) || (lang === 'uz' ? "Bizning qadriyatlar" : lang === 'ru' ? "Наши ценности" : "Our Values");
   const heroImage = String(s.hero_image_url || '/images/about.jpg');

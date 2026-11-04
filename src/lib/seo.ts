@@ -5,7 +5,7 @@ import type { Product, SiteSettings } from '@/types';
 export const SITE_NAME = 'ECO COMPANY';
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://ecocompany.uz').replace(/\/$/, '');
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/about.jpg`;
-export const DEFAULT_DESCRIPTION = "ECO COMPANY - O'zbekistondagi premium tozalangan suv ishlab chiqaruvchisi.";
+export const DEFAULT_DESCRIPTION = "ECO COMPANY — suv tozalash filtrlari ishlab chiqaruvchisi: suv filtrlari, teskari osmos tizimlari va kartridjlar.";
 
 export const absoluteUrl = (value?: string | null) => {
   if (!value) return DEFAULT_OG_IMAGE;
@@ -92,29 +92,34 @@ export const defaultSeoKeywords = (lang: Lang) => {
   if (lang === 'ru') {
     return [
       'ECO COMPANY',
-      'очищенная вода',
-      'питьевая вода',
+      'фильтр для очистки воды',
       'фильтры для воды',
-      'оборудование для очистки воды',
+      'обратный осмос',
+      'фильтр обратного осмоса',
+      'картриджи для фильтров',
+      'фильтр для воды Ташкент',
     ];
   }
 
   if (lang === 'en') {
     return [
       'ECO COMPANY',
-      'purified water',
-      'drinking water',
-      'water filters',
-      'water treatment equipment',
+      'water filter',
+      'water purification filters',
+      'reverse osmosis',
+      'reverse osmosis system',
+      'filter cartridges',
     ];
   }
 
   return [
     'ECO COMPANY',
-    'tozalangan suv',
-    'ichimlik suvi',
-    'suv filtrlari',
-    'suv tozalash uskunalari',
+    'suv filtr',
+    'suv tozalash filtrlari',
+    'filtr',
+    'teskari osmos',
+    'obratniy osmos',
+    'suv filtri Toshkent',
   ];
 };
 

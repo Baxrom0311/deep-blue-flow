@@ -16,9 +16,9 @@ const LANGS = ['uz', 'ru', 'en'];
 const DEFAULT_IMAGE = `${siteUrl}/images/about.jpg`;
 
 const staticRoutes = [
-  { path: '/', title: `Premium Tozalangan Suv | ${SITE_NAME}`, description: "ECO COMPANY — O'zbekistondagi premium tozalangan ichimlik suvi ishlab chiqaruvchisi. Zamonaviy texnologiyalar yordamida tozalangan, sifat sertifikatlangan suv." },
-  { path: '/products', title: `Mahsulotlar | ${SITE_NAME}`, description: "ECO COMPANY mahsulotlari katalogi: premium tozalangan ichimlik suvi, suv filtrlari va suv tozalash uskunalari." },
-  { path: '/about', title: `Kompaniya haqida | ${SITE_NAME}`, description: "ECO COMPANY haqida: sifatli suv — sog'lom hayot kafolati. Kompaniya tarixi, qadriyatlari va ishlab chiqarish jarayoni." },
+  { path: '/', title: `Suv filtrlari va teskari osmos tizimlari | ${SITE_NAME}`, description: "ECO COMPANY — suv tozalash filtrlari ishlab chiqaruvchisi. Uy va ofis uchun suv filtrlari, teskari osmos (obratniy osmos) tizimlari va kartridjlar." },
+  { path: '/products', title: `Suv filtrlari katalogi | ${SITE_NAME}`, description: "Suv tozalash filtrlari katalogi: suv filtrlari, teskari osmos tizimlari va almashtiriladigan kartridjlar. Фильтры для очистки воды и обратный осмос." },
+  { path: '/about', title: `Kompaniya haqida | ${SITE_NAME}`, description: "ECO COMPANY — suv tozalash filtrlari ishlab chiqaruvchi kompaniya. Kompaniya tarixi, qadriyatlari va ishlab chiqarish jarayoni." },
   { path: '/certificates', title: `Sertifikatlar | ${SITE_NAME}`, description: "ECO COMPANY sertifikatlari va sifatni tasdiqlovchi hujjatlar ro'yxati." },
   { path: '/gallery', title: `Galereya | ${SITE_NAME}`, description: "ECO COMPANY galereyasi, o'rnatish jarayonlari va kompaniya faoliyatidan lavhalar." },
   { path: '/contact', title: `Biz bilan bog'laning | ${SITE_NAME}`, description: "ECO COMPANY bilan bog'lanish uchun telefon, email va manzil ma'lumotlari." },

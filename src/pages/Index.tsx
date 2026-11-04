@@ -734,9 +734,9 @@ const HomePage = () => {
     queryFn: api.getFeaturedProducts,
     staleTime: 5 * 60 * 1000,
   });
-  const title = `${settings.hero_badge || t('hero_badge', lang)} | ECO COMPANY`;
+  const title = `${localizedField(settings, 'seo_home_title', lang) || t('seo_home_title', lang)} | ECO COMPANY`;
   const description = sanitizeDescription(
-    localizedField(settings, 'hero_subtitle', lang) || localizedField(settings, 'about_text', lang),
+    localizedField(settings, 'seo_home_description', lang) || t('seo_home_description', lang),
   );
   const heroImage = String(settings.hero_image_url || '/images/about.jpg');
   const featuredProducts = featuredProductsData || [];
@@ -757,7 +757,7 @@ const HomePage = () => {
     localizedField(settings, 'hero_subtitle', lang),
     navigationItems.map((item) => item.name),
     featuredProducts.slice(0, 6).map((product) => localizedField(product, 'name', lang) || ''),
-    keywordPhrase('ECO COMPANY', lang === 'uz' ? 'premium tozalangan suv' : lang === 'ru' ? 'премиальная очищенная вода' : 'premium purified water'),
+    keywordPhrase('ECO COMPANY', lang === 'uz' ? 'suv filtrlari' : lang === 'ru' ? 'фильтры для воды' : 'water filters'),
   );
 
   return (

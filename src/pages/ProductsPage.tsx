@@ -43,8 +43,8 @@ const ProductsPage = () => {
     : `${t('nav_products', lang)} | ECO COMPANY`;
   const pageDescription = sanitizeDescription(
     activeCategory
-      ? `${activeCategoryName} katalogi va premium tozalangan suv mahsulotlari.`
-      : "Premium tozalangan suv mahsulotlari katalogi va buyurtma uchun mavjud barcha pozitsiyalar.",
+      ? `${activeCategoryName} katalogi: suv filtrlari, teskari osmos tizimlari va kartridjlar.`
+      : "Suv tozalash filtrlari katalogi: suv filtrlari, teskari osmos (obratniy osmos) tizimlari va almashtiriladigan kartridjlar.",
   );
   const seoImage = pickPrimaryImage(items[0]?.images?.[0], items[0]?.image_url, '/images/about.jpg');
   const shouldNoindex = page > 1 || saleOnly || !!categoryId || !!search.trim();
