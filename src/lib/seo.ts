@@ -1,6 +1,7 @@
 import { localizedField, type Lang } from '@/lib/i18n';
 export type { Lang } from '@/lib/i18n';
 import type { Product, SiteSettings } from '@/types';
+import { areaServedSchema } from '@/lib/regions';
 
 export const SITE_NAME = 'ECO COMPANY';
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://ecocompany.uz').replace(/\/$/, '');
@@ -97,7 +98,7 @@ export const defaultSeoKeywords = (lang: Lang) => {
       'обратный осмос',
       'фильтр обратного осмоса',
       'картриджи для фильтров',
-      'фильтр для воды Ташкент',
+      'фильтр для воды Узбекистан',
     ];
   }
 
@@ -119,7 +120,7 @@ export const defaultSeoKeywords = (lang: Lang) => {
     'filtr',
     'teskari osmos',
     'obratniy osmos',
-    'suv filtri Toshkent',
+    "suv filtri O'zbekiston",
   ];
 };
 
@@ -199,10 +200,7 @@ export const buildOrganizationSchema = (settings: SiteSettings, lang: Lang, keyw
         availableLanguage: ['uz', 'ru', 'en'],
       } : null,
     ].filter(Boolean),
-    areaServed: {
-      '@type': 'Country',
-      name: 'Uzbekistan',
-    },
+    areaServed: areaServedSchema(lang),
     sameAs: sameAs.length ? sameAs : undefined,
     email: settings.email || undefined,
     telephone: settings.phone_1 || undefined,
@@ -243,6 +241,7 @@ export const buildLocalBusinessSchema = (settings: SiteSettings, lang: Lang, key
       addressCountry: 'UZ',
     } : undefined,
     openingHours: settings.working_hours || undefined,
+    areaServed: areaServedSchema(lang),
   };
 };
 

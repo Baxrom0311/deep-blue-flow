@@ -14,6 +14,7 @@ import ProductCard from '@/components/ui/ProductCard';
 import SkeletonCard from '@/components/ui/SkeletonCard';
 import MediaLightbox from '@/components/ui/MediaLightbox';
 import SEO from '@/components/SEO';
+import { REGIONS } from '@/lib/regions';
 import { buildItemListSchema, buildOrganizationSchema, buildSiteNavigationSchema, buildWebsiteSchema, defaultSeoKeywords, keywordPhrase, mergeKeywords, sanitizeDescription } from '@/lib/seo';
 import { Product, Album, AlbumItem, Certificate, InstagramVideo, PaginatedResponse } from '@/types';
 
@@ -658,6 +659,37 @@ const CertificatesCarousel = () => {
   );
 };
 
+const RegionsSection = () => {
+  const { lang } = useLang();
+
+  return (
+    <section className="py-14 bg-transparent relative overflow-hidden" aria-labelledby="regions-title">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-8 max-w-2xl mx-auto">
+          <span className="text-xs font-black uppercase tracking-[0.25em] text-gradient-water mb-3 block">
+            ECO COMPANY
+          </span>
+          <h2 id="regions-title" className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight">
+            {t('regions_title', lang)}
+          </h2>
+          <p className="mt-3 text-muted-foreground">{t('regions_subtitle', lang)}</p>
+        </div>
+        <ul className="flex flex-wrap justify-center gap-2.5">
+          {REGIONS.map((region) => (
+            <li
+              key={region.uz}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/65 px-4 py-2 text-sm font-semibold text-foreground backdrop-blur-sm"
+            >
+              <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
+              {region[lang]}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+};
+
 const PartnersSection = () => {
   const { lang } = useLang();
   const settings = useSettings();
@@ -789,6 +821,7 @@ const HomePage = () => {
       <CertificatesCarousel />
       <ProductsCarousel />
       <StatsSection />
+      <RegionsSection />
       <GalleryCarousel />
       <InstagramVideosSection />
       <PartnersSection />

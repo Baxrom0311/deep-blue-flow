@@ -16,7 +16,7 @@ const LANGS = ['uz', 'ru', 'en'];
 const DEFAULT_IMAGE = `${siteUrl}/images/about.jpg`;
 
 const staticRoutes = [
-  { path: '/', title: `Suv filtrlari va teskari osmos tizimlari | ${SITE_NAME}`, description: "ECO COMPANY — suv tozalash filtrlari ishlab chiqaruvchisi. Uy va ofis uchun suv filtrlari, teskari osmos (obratniy osmos) tizimlari va kartridjlar." },
+  { path: '/', title: `Suv filtrlari va teskari osmos tizimlari | ${SITE_NAME}`, description: "Suv tozalash filtrlari, teskari osmos (obratniy osmos) tizimlari va kartridjlar. O'zbekistonning barcha viloyatlariga yetkazib berish — ECO COMPANY." },
   { path: '/products', title: `Suv filtrlari katalogi | ${SITE_NAME}`, description: "Suv tozalash filtrlari katalogi: suv filtrlari, teskari osmos tizimlari va almashtiriladigan kartridjlar. Фильтры для очистки воды и обратный осмос." },
   { path: '/about', title: `Kompaniya haqida | ${SITE_NAME}`, description: "ECO COMPANY — suv tozalash filtrlari ishlab chiqaruvchi kompaniya. Kompaniya tarixi, qadriyatlari va ishlab chiqarish jarayoni." },
   { path: '/certificates', title: `Sertifikatlar | ${SITE_NAME}`, description: "ECO COMPANY sertifikatlari va sifatni tasdiqlovchi hujjatlar ro'yxati." },
