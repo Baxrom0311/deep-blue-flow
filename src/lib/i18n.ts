@@ -9,7 +9,7 @@ const translations: Record<string, Record<Lang, string>> = {
   nav_certificates: { uz: "Sertifikatlar", ru: "Сертификаты", en: "Certificates" },
   nav_gallery: { uz: "Galereya", ru: "Галерея", en: "Gallery" },
   nav_contact: { uz: "Aloqa", ru: "Контакты", en: "Contact" },
-  hero_badge: { uz: "Suv tozalash filtrlari", ru: "Фильтры для очистки воды", en: "Water Purification Filters" },
+  hero_badge: { uz: "Teskari osmos tizimlari va kartridjlar", ru: "Обратный осмос и картриджи", en: "Reverse Osmosis and Cartridges" },
   seo_home_title: { uz: "Suv filtrlari va teskari osmos tizimlari", ru: "Фильтры для очистки воды и обратный осмос", en: "Water Filters and Reverse Osmosis Systems" },
   seo_home_description: { uz: "Suv tozalash filtrlari, teskari osmos (obratniy osmos) tizimlari va kartridjlar. O'zbekistonning barcha viloyatlariga yetkazib berish — ECO COMPANY.", ru: "ECO COMPANY — фильтры для очистки воды, системы обратного осмоса и картриджи. Доставка во все регионы Узбекистана.", en: "ECO COMPANY — water purification filters, reverse osmosis systems and cartridges. Delivery to every region of Uzbekistan." },
   hero_title: { uz: "Toza suv — hayot manbai", ru: "Чистая вода — источник жизни", en: "Pure water — source of life" },
